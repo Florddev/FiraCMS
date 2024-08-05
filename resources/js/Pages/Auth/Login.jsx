@@ -17,6 +17,7 @@ import {
     CardTitle,
 } from "@/Components/ui/card"
 import { Input } from "@/Components/ui/input"
+import { PasswordInput } from "@/Components/ui/input-password"
 import { Label } from "@/Components/ui/label"
 
 export default function Login({ status, canResetPassword }) {
@@ -138,9 +139,8 @@ export default function Login({ status, canResetPassword }) {
                                         </Link>
                                     )}
                                 </div>
-                                <Input
+                                <PasswordInput
                                     id="password"
-                                    type="password"
                                     name="password"
                                     value={data.password}
                                     className="mt-1 block w-full"
