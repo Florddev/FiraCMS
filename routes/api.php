@@ -17,3 +17,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/translations/{locale}', function ($locale) {
+    $translations = [];
+    $path = resource_path("lang/$locale");
+    if (is_dir($path)) {
+        $files = glob("$path/*.php");
+        foreach ($files as $file) {
+            $name = basename($file, '.php');
+            $translations[$name] = require $file;
+        }
+    }
+    return response()->json($translations);
+});

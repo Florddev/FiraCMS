@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\TranslationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,10 +37,16 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+
+Route::post('/change-locale', [LanguageController::class, 'changeLocale'])->name('change.locale');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
 
     Route::resource('users', UserController::class);
     Route::delete('/users/destroy-multiple', [UserController::class, 'destroyMultiple'])->name('users.destroyMultiple');

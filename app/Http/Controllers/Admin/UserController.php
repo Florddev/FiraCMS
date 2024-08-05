@@ -44,6 +44,34 @@ class UserController extends Controller
         ]);
     }
 
+    public function list(Request $request)
+    {
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('email', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('orderBy')) {
+            $query->orderBy($request->orderBy, $request->direction ?? 'asc');
+        }
+
+        if ($request->filled('max')) {
+            $query->take($request->input('max'));
+        }
+
+        $perPage = $request->input('per_page') ?? 10;
+        $users = $query->paginate($perPage);
+
+        return Inertia::render('Admin/User/UserList', [
+            'data' => $users,
+            'defaultPerPage' => $perPage
+        ]);
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      */
