@@ -2,39 +2,26 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Storage;
+
 class InstallationStateManager
 {
-    private $stateFile;
-    private $steps = [
-        'start',
-        'requirements',
-        'permissions',
-        'database',
-        'migrations',
-        'admin',
-        'finish'
-    ];
-
-    public function __construct()
-    {
-        $this->stateFile = storage_path('app/installation_state.json');
-    }
+    private $stateFile = 'installation_state.json';
 
     public function getCurrentStep()
     {
-        if (!file_exists($this->stateFile)) {
-            return $this->steps[0];
+        if (!Storage::exists($this->stateFile)) {
+            return 'start';
         }
 
-        $state = json_decode(file_get_contents($this->stateFile), true);
-        $currentStepIndex = array_search($state['current_step'], $this->steps);
-        return $this->steps[$currentStepIndex] ?? 'finish';
+        $state = json_decode(Storage::get($this->stateFile), true);
+        return $state['current_step'] ?? 'start';
     }
 
     public function setCurrentStep($step)
     {
         $state = ['current_step' => $step];
-        file_put_contents($this->stateFile, json_encode($state));
+        Storage::put($this->stateFile, json_encode($state));
     }
 
     public function isInstalled()
@@ -44,8 +31,8 @@ class InstallationStateManager
 
     public function reset()
     {
-        if (file_exists($this->stateFile)) {
-            unlink($this->stateFile);
+        if (Storage::exists($this->stateFile)) {
+            Storage::delete($this->stateFile);
         }
     }
 }

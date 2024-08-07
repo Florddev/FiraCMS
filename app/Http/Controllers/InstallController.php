@@ -26,41 +26,104 @@ class InstallController extends Controller
 
     public function index()
     {
-        $currentStep = $this->stateManager->getCurrentStep();
-        return redirect()->route("install.{$currentStep}");
+        return Inertia::render('InstallationStepper', [
+            'requirements' => $this->checkRequirements(),
+            'permissions' => $this->checkPermissions(),
+        ]);
     }
 
-    public function start()
+    public function getInitialData()
     {
-//        $this->stateManager->setCurrentStep('start');
-        return Inertia::render('Install/Start');
+        return response()->json([
+            'requirements' => $this->checkRequirements(),
+            'permissions' => $this->checkPermissions(),
+        ]);
     }
 
-    public function requirements()
+    public function install(Request $request)
     {
-//        $this->stateManager->setCurrentStep('requirements');
-        $requirements = $this->checkRequirements();
-        return Inertia::render('Install/Requirements', ['requirements' => $requirements]);
-    }
+        $validated = $request->validate([
+            'db_host' => 'required',
+            'db_port' => 'required',
+            'db_database' => 'required',
+            'db_username' => 'required',
+            'db_password' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
 
-    public function permissions()
-    {
-//        $this->stateManager->setCurrentStep('permissions');
-        $permissions = $this->checkPermissions();
-        return Inertia::render('Install/Permissions', ['permissions' => $permissions]);
-    }
+        try {
+            // Étape 1-2: Vérification des prérequis et permissions
+            // (Déjà fait côté client, on pourrait les re-vérifier ici si nécessaire)
 
-    public function database()
-    {
-        if($this->stateManager->getCurrentStep() === 'migrations') {
-            return redirect()->route('install.index');
+            // Étape 3: Configuration de la base de données
+            $this->checkDatabaseConnection($validated);
+            $this->updateEnvFile($validated);
+
+            // Étape 4: Exécution des migrations
+            Artisan::call('migrate', ['--force' => true]);
+
+            // Étape 5: Création de l'administrateur
+            User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'locale' => session('locale', config('app.locale')),
+                'is_admin' => true,
+            ]);
+
+            // Étape 6: Finalisation
+            file_put_contents(storage_path('installed'), 'Installation completed on ' . date('Y-m-d H:i:s'));
+
+            return response()->json(['success' => true, 'message' => 'Installation completed successfully.']);
+        } catch (\Exception $e) {
+            Log::error('Error during installation: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred during installation: ' . $e->getMessage()], 500);
         }
-
-//        $this->stateManager->setCurrentStep('database');
-        return Inertia::render('Install/Database');
     }
 
-    public function setDatabase(Request $request)
+    public function getStep($step)
+    {
+        switch ($step) {
+            case 0:
+                return response()->json([]);
+            case 1:
+                return response()->json(['requirements' => $this->checkRequirements()]);
+            case 2:
+                return response()->json(['permissions' => $this->checkPermissions()]);
+            case 3:
+            case 4:
+            case 5:
+                return response()->json([]);
+            case 6:
+                return response()->json([]);
+            default:
+                return response()->json(['error' => 'Étape invalide'], 400);
+        }
+    }
+
+    public function postStep(Request $request, $step)
+    {
+        switch ($step) {
+            case 0:
+            case 1:
+            case 2:
+                return response()->json(['success' => true]);
+            case 3:
+                return $this->setDatabase($request);
+            case 4:
+                return $this->runMigrations();
+            case 5:
+                return $this->createAdmin($request);
+            case 6:
+                return $this->finish();
+            default:
+                return response()->json(['error' => 'Étape invalide'], 400);
+        }
+    }
+
+    private function setDatabase(Request $request)
     {
         $validation = $request->validate([
             'db_host' => 'required',
@@ -70,82 +133,60 @@ class InstallController extends Controller
             'db_password' => 'required',
         ]);
 
-
         try {
             $this->checkDatabaseConnection($validation);
             $this->updateEnvFile($request->all());
 
             $this->stateManager->setCurrentStep('migrations');
-            return redirect()->route('install.migrations');
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            Log::error('Erreur dans storeDatabaseSettings: ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Une erreur est survenue: ' . $e->getMessage()]);
+            Log::error('Erreur dans setDatabase: ' . $e->getMessage());
+            return response()->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], 500);
         }
-
     }
 
-    private function checkDatabaseConnection($config)
-    {
-        $connection = config('database.default');
-
-        config([
-            "database.connections.{$connection}.host" => $config['db_host'],
-            "database.connections.{$connection}.port" => $config['db_port'],
-            "database.connections.{$connection}.database" => $config['db_database'],
-            "database.connections.{$connection}.username" => $config['db_username'],
-            "database.connections.{$connection}.password" => $config['db_password'],
-        ]);
-
-        DB::purge($connection);
-        DB::reconnect($connection);
-        DB::connection()->getPdo();
-    }
-
-    public function migrations()
-    {
-        return Inertia::render('Install/Migrations');
-    }
-
-    public function runMigrations()
+    private function runMigrations()
     {
         try {
             Artisan::call('migrate', ['--force' => true]);
             $this->stateManager->setCurrentStep('admin');
-            return redirect()->route('install.admin');
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            return back()->withErrors(['message' => $e->getMessage()]);
+            Log::error('Erreur dans runMigrations: ' . $e->getMessage());
+            return response()->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], 500);
         }
     }
 
-    public function admin()
+    private function createAdmin(Request $request)
     {
-        return Inertia::render('Install/Admin');
-    }
-
-    public function createAdmin(Request $request)
-    {
-        $request->validate([
+        $validation = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'locale' => session('locale', config('app.locale')),
-            'is_admin' => true,
-        ]);
+        try {
+            User::create([
+                'name' => $validation['name'],
+                'email' => $validation['email'],
+                'password' => Hash::make($validation['password']),
+                'locale' => session('locale', config('app.locale')),
+                'is_admin' => true,
+            ]);
 
-        return redirect()->route('install.finish');
+            $this->stateManager->setCurrentStep('finish');
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('Erreur dans createAdmin: ' . $e->getMessage());
+            return response()->json(['error' => 'Une erreur est survenue: ' . $e->getMessage()], 500);
+        }
     }
 
-    public function finish()
+    private function finish()
     {
         $this->stateManager->setCurrentStep('finish');
         file_put_contents(storage_path('installed'), 'Installation completed on ' . date('Y-m-d H:i:s'));
-        return Inertia::render('Install/Finish');
+        return response()->json(['success' => true]);
     }
 
     private function checkRequirements()
@@ -172,17 +213,22 @@ class InstallController extends Controller
         ];
     }
 
-//    private function updateEnvFile($data)
-//    {
-//        $envFile = base_path('.env');
-//        $contents = file_get_contents($envFile);
-//
-//        foreach ($data as $key => $value) {
-//            $contents = preg_replace("/^{$key}=.*/m", "{$key}={$value}", $contents);
-//        }
-//
-//        file_put_contents($envFile, $contents);
-//    }
+    private function checkDatabaseConnection($config)
+    {
+        $connection = config('database.default');
+
+        config([
+            "database.connections.{$connection}.host" => $config['db_host'],
+            "database.connections.{$connection}.port" => $config['db_port'],
+            "database.connections.{$connection}.database" => $config['db_database'],
+            "database.connections.{$connection}.username" => $config['db_username'],
+            "database.connections.{$connection}.password" => $config['db_password'],
+        ]);
+
+        DB::purge($connection);
+        DB::reconnect($connection);
+        DB::connection()->getPdo();
+    }
 
     private function updateEnvFile($data): void
     {
@@ -192,21 +238,16 @@ class InstallController extends Controller
             $content = file_get_contents($path);
 
             foreach ($data as $key => $value) {
-                // Échapper les caractères spéciaux dans la valeur
                 $value = str_replace('"', '\\"', $value);
-
-                // Convertir le nom de la clé au format attendu dans le fichier .env
                 $envKey = strtoupper(str_replace('db_', 'DB_', $key));
 
                 if (strpos($content, $envKey . '=') !== false) {
-                    // Mettre à jour la valeur existante
                     $content = preg_replace(
                         "/^{$envKey}=.*/m",
                         "{$envKey}=\"{$value}\"",
                         $content
                     );
                 } else {
-                    // Ajouter une nouvelle variable si elle n'existe pas
                     $content .= PHP_EOL . "{$envKey}=\"{$value}\"";
                 }
             }
