@@ -38,7 +38,7 @@ const UserList = ({ defaultPerPage }) => {
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">User List</h1>
 
-            <h1>{t('test.welcome')}</h1>
+            <h1>{t('messages.welcome')}</h1>
             <LanguageSelector
                 currentLocale={locale}
                 availableLocales={availableLocales}

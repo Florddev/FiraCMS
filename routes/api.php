@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/translations/{locale}', function ($locale) {
     $translations = [];
-    $path = resource_path("lang/$locale");
+    $path = __DIR__."/../lang/$locale";
     if (is_dir($path)) {
         $files = glob("$path/*.php");
         foreach ($files as $file) {
