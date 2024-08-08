@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useForm } from '@inertiajs/react';
 import {Stepper, Step, useStepper} from '@/Components/ui/stepper';
 import { Button } from '@/Components/ui/button';
@@ -15,19 +15,29 @@ import {
     User,
     Database,
     ScanSearch,
-    ShieldQuestion
+    ShieldQuestion,
+    X
 } from "lucide-react";
 import {cn} from "@/lib/utils";
 
 const steps = [
-    { id:1, label: "Bienvenue", description: "Accueil", Composent: WelcomeStep, icon: Home },
-    { id:2, label: "Prérequis", description: "Vérification des prérequis", Composent: RequirementsStep, icon: ScanSearch },
-    { id:3, label: "Permissions", description: "Vérification des permissions", Composent: PermissionsStep, icon: ShieldQuestion },
-    { id:4, label: "Base de données", description: "Configuration de la base de données", Composent: DatabaseStep, icon: Database },
-    { id:5, label: "Compte", description: "Création de l'administrateur", Composent: AdminStep, icon: User },
+    { id: 0, tag: "start", label: "Bienvenue", description: "Accueil", Composent: WelcomeStep, icon: Home },
+    { id: 1, tag: "requirements", label: "Prérequis", description: "Vérification des prérequis", Composent: RequirementsStep, icon: ScanSearch },
+    { id: 2, tag: "permissions", label: "Permissions", description: "Vérification des permissions", Composent: PermissionsStep, icon: ShieldQuestion },
+    { id: 3, tag: "database", label: "Base de données", description: "Configuration de la base de données", Composent: DatabaseStep, icon: Database },
+    { id: 4, tag: "admin", label: "Compte", description: "Création de l'administrateur", Composent: AdminStep, icon: User },
 ]
+const getStepByPropName = (prop) => {
+    return steps.find(step => step.tag === prop);
+}
 
-export default function InstallationStepper({ requirements, permissions, current_step }) {
+export default function InstallationStepper({ requirements, permissions, current_step = 'start' }) {
+    const [currentStep, setCurrentStep] = useState(0)
+
+    useEffect(() => {
+        setCurrentStep(getStepByPropName(current_step));
+    }, [current_step]);
+
     const { data, setData, post, processing, errors, reset } = useForm({
         db_host: '',
         db_port: '',
@@ -51,16 +61,16 @@ export default function InstallationStepper({ requirements, permissions, current
         await post('/install');
     };
 
-    const clickStep = (step, setStep) => {
-        setStep(step);
-    }
+    // const clickStep = (step, setStep) => {
+    //     setStep(step);
+    // }
 
     return (
         <div className="flex w-full flex-col gap-4 container mt-12">
             <Stepper
-                initialStep={current_step === 'database' ? 3 : 0}
+                initialStep={currentStep.id}
                 steps={steps}
-                onClickStep={clickStep}
+                // onClickStep={clickStep}
                 styles={{
                     "step-button-container": cn(
                         "text-primary",
@@ -73,17 +83,17 @@ export default function InstallationStepper({ requirements, permissions, current
                 }}
             >
                 {steps.map(({ label, Composent, icon, description, id }, index) => (
-                    <Step key={label} label={label} icon={icon} color="red" description={description} state={(id === 4 && hasDbError) ? "error" : ""}>
+                    <Step key={label} label={label} icon={icon} color="red" description={description}>
                         <Composent data={data} setData={setData} errors={errors} requirements={requirements} permissions={permissions} />
                     </Step>
                 ))}
-                <Footer submit={submit} errors={errors} />
+                <Footer submit={submit} errors={errors} currentStep={currentStep} />
             </Stepper>
         </div>
     )
 }
 
-const Footer = ({submit, errors}) => {
+const Footer = ({submit, errors, currentStep}) => {
     const {
         nextStep,
         prevStep,
@@ -92,15 +102,23 @@ const Footer = ({submit, errors}) => {
         hasCompletedAllSteps,
         isLastStep,
         isOptionalStep,
-        setStep
+        setStep,
+        activeStep
     } = useStepper()
 
-    const test = async (e) => {
-        await submit(e);
-        //resetSteps();
+    useEffect(() => {
+        setStep(currentStep.id)
+    }, [errors, currentStep]);
+
+    const handlNextStep = (e) => {
+        if(activeStep === getStepByPropName('database').id
+            || activeStep === getStepByPropName('admin').id
+        ){
+            submit(e);
+        } else {
+            nextStep();
+        }
     }
-
-
 
     return (
         <>
@@ -114,7 +132,7 @@ const Footer = ({submit, errors}) => {
             )}
             <div className="w-full flex justify-end gap-2">
                 {hasCompletedAllSteps ? (
-                    <Button size="sm" onClick={test}>
+                    <Button size="sm" onClick={submit}>
                         Valider la configuration
                     </Button>
                 ) : (
@@ -127,7 +145,7 @@ const Footer = ({submit, errors}) => {
                         >
                             Précédent
                         </Button>
-                        <Button size="sm" onClick={nextStep}>
+                        <Button size="sm" onClick={handlNextStep}>
                             {isLastStep ? "Récapitulatif" : isOptionalStep ? "Skip" : "Suivant"}
                         </Button>
                     </>

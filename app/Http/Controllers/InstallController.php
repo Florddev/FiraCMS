@@ -44,41 +44,43 @@ class InstallController extends Controller
     public function install(Request $request)
     {
         $this->stateManager->setCurrentStep('database');
-        $validated = $request->validate([
+        $dbValidated = $request->validate([
             'db_host' => 'required',
             'db_port' => 'required',
             'db_database' => 'required',
             'db_username' => 'required',
-            'db_password' => 'required',
+            'db_password' => 'required'
+        ]);
+        $this->checkDatabaseConnection($dbValidated);
+
+        $this->stateManager->setCurrentStep('admin');
+        $userValidated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-        ], ["test"]);
-
-        $this->stateManager->setCurrentStep('admin');
+        ]);
 
         try {
             // Étape 1-2: Vérification des prérequis et permissions
             // (Déjà fait côté client, on pourrait les re-vérifier ici si nécessaire)
 
             // Étape 3: Configuration de la base de données
-            $this->checkDatabaseConnection($validated);
-            $this->updateEnvFile($validated);
+            $this->updateEnvFile($dbValidated);
 
             // Étape 4: Exécution des migrations
             Artisan::call('migrate', ['--force' => true]);
 
             // Étape 5: Création de l'administrateur
             User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
+                'name' => $userValidated['name'],
+                'email' => $userValidated['email'],
+                'password' => Hash::make($userValidated['password']),
                 'locale' => session('locale', config('app.locale')),
                 'is_admin' => true,
             ]);
 
             // Étape 6: Finalisation
-            $this->stateManager->setCurrentStep('finished');
+            $this->stateManager->setCurrentStep('finish');
             file_put_contents(storage_path('installed'), 'Installation completed on ' . date('Y-m-d H:i:s'));
             return route("home");
         } catch (\Exception $e) {
