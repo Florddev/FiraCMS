@@ -10,36 +10,36 @@ export const DatabaseStep = ({ data, setData, errors }) => (
                 value={data.db_host}
                 onChange={(e) => setData('db_host', e.target.value)}
                 placeholder="Hôte"
-                error={errors.db_host}
             />
+            {errors.db_host ?? (<span>{errors.db_host}</span>)}
             <Input
                 type="text"
                 value={data.db_port}
                 onChange={(e) => setData('db_port', e.target.value)}
                 placeholder="Port"
-                error={errors.db_port}
             />
+            {errors.db_port ?? (<span>{errors.db_port}</span>)}
             <Input
                 type="text"
                 value={data.db_database}
                 onChange={(e) => setData('db_database', e.target.value)}
                 placeholder="Nom de la base de données"
-                error={errors.db_database}
             />
+            {errors.db_database ?? (<span>{errors.db_database}</span>)}
             <Input
                 type="text"
                 value={data.db_username}
                 onChange={(e) => setData('db_username', e.target.value)}
                 placeholder="Nom d'utilisateur"
-                error={errors.db_username}
             />
+            {errors.db_username ?? (<span>{errors.db_username}</span>)}
             <Input
                 type="password"
                 value={data.db_password}
                 onChange={(e) => setData('db_password', e.target.value)}
                 placeholder="Mot de passe"
-                error={errors.db_password}
             />
+            {errors.db_password ?? (<span>{errors.db_password}</span>)}
         </div>
     </div>
 );

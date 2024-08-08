@@ -29,6 +29,7 @@ class InstallController extends Controller
         return Inertia::render('InstallationStepper', [
             'requirements' => $this->checkRequirements(),
             'permissions' => $this->checkPermissions(),
+            'current_step' => $this->stateManager->getCurrentStep()
         ]);
     }
 
@@ -42,6 +43,7 @@ class InstallController extends Controller
 
     public function install(Request $request)
     {
+        $this->stateManager->setCurrentStep('database');
         $validated = $request->validate([
             'db_host' => 'required',
             'db_port' => 'required',
@@ -51,7 +53,9 @@ class InstallController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-        ]);
+        ], ["test"]);
+
+        $this->stateManager->setCurrentStep('admin');
 
         try {
             // Étape 1-2: Vérification des prérequis et permissions
@@ -74,9 +78,9 @@ class InstallController extends Controller
             ]);
 
             // Étape 6: Finalisation
+            $this->stateManager->setCurrentStep('finished');
             file_put_contents(storage_path('installed'), 'Installation completed on ' . date('Y-m-d H:i:s'));
-
-            return response()->json(['success' => true, 'message' => 'Installation completed successfully.']);
+            return route("home");
         } catch (\Exception $e) {
             Log::error('Error during installation: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred during installation: ' . $e->getMessage()], 500);

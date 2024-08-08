@@ -20,14 +20,14 @@ import {
 import {cn} from "@/lib/utils";
 
 const steps = [
-    { label: "Bienvenue", description: "Accueil", Composent: WelcomeStep, icon: Home },
-    { label: "Prérequis", description: "Vérification des prérequis", Composent: RequirementsStep, icon: ScanSearch },
-    { label: "Permissions", description: "Vérification des permissions", Composent: PermissionsStep, icon: ShieldQuestion },
-    { label: "Base de données", description: "Configuration de la base de données", Composent: DatabaseStep, icon: Database },
-    { label: "Compte", description: "Création de l'administrateur", Composent: AdminStep, icon: User },
+    { id:1, label: "Bienvenue", description: "Accueil", Composent: WelcomeStep, icon: Home },
+    { id:2, label: "Prérequis", description: "Vérification des prérequis", Composent: RequirementsStep, icon: ScanSearch },
+    { id:3, label: "Permissions", description: "Vérification des permissions", Composent: PermissionsStep, icon: ShieldQuestion },
+    { id:4, label: "Base de données", description: "Configuration de la base de données", Composent: DatabaseStep, icon: Database },
+    { id:5, label: "Compte", description: "Création de l'administrateur", Composent: AdminStep, icon: User },
 ]
 
-export default function InstallationStepper({ requirements, permissions }) {
+export default function InstallationStepper({ requirements, permissions, current_step }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         db_host: '',
         db_port: '',
@@ -40,9 +40,16 @@ export default function InstallationStepper({ requirements, permissions }) {
         password_confirmation: '',
     });
 
-    const submit = () => {
-        console.log(data);
-    }
+    const hasDbError =
+        errors.db_host !== undefined ||
+        errors.db_port !== undefined ||
+        errors.db_database !== undefined ||
+        errors.db_username !== undefined ||
+        errors.db_password !== undefined
+
+    const submit = async () => {
+        await post('/install');
+    };
 
     const clickStep = (step, setStep) => {
         setStep(step);
@@ -51,30 +58,32 @@ export default function InstallationStepper({ requirements, permissions }) {
     return (
         <div className="flex w-full flex-col gap-4 container mt-12">
             <Stepper
-                initialStep={0}
+                initialStep={current_step === 'database' ? 3 : 0}
                 steps={steps}
                 onClickStep={clickStep}
                 styles={{
                     "step-button-container": cn(
                         "text-primary",
-                        "data-[current=true]:border-primary data-[current=true]:bg-primary-foreground",
-                        "data-[active=true]:bg-primary data-[active=true]:border-primary"
+                        "data-[active=false]:text-muted-foreground/40 data-[active=false]:bg-white",
+                        "data-[active=true]:bg-primary data-[active=true]:border-primary",
+
+                        "data-[current=true]:border-primary data-[current=true]:text-primary data-[current=true]:bg-primary-foreground",
                     ),
                     "horizontal-step": "data-[completed=true]:[&:not(:last-child)]:after:bg-primary",
                 }}
             >
-                {steps.map(({ label, Composent, icon, description }, index) => (
-                    <Step key={label} label={label} icon={icon} color="red" description={description}>
+                {steps.map(({ label, Composent, icon, description, id }, index) => (
+                    <Step key={label} label={label} icon={icon} color="red" description={description} state={(id === 4 && hasDbError) ? "error" : ""}>
                         <Composent data={data} setData={setData} errors={errors} requirements={requirements} permissions={permissions} />
                     </Step>
                 ))}
-                <Footer submit={submit} />
+                <Footer submit={submit} errors={errors} />
             </Stepper>
         </div>
     )
 }
 
-const Footer = ({submit}) => {
+const Footer = ({submit, errors}) => {
     const {
         nextStep,
         prevStep,
@@ -83,17 +92,29 @@ const Footer = ({submit}) => {
         hasCompletedAllSteps,
         isLastStep,
         isOptionalStep,
+        setStep
     } = useStepper()
+
+    const test = async (e) => {
+        await submit(e);
+        //resetSteps();
+    }
+
+
+
     return (
         <>
             {hasCompletedAllSteps && (
                 <div className="h-40 flex items-center justify-center my-4 border bg-secondary text-primary rounded-md">
-                    <h1 className="text-xl">Récapitulatif des données..</h1>
+                    {Object.keys(errors).length === 0
+                        ? <h1 className="text-xl">Récapitulatif des données..</h1>
+                        : <h1 className="text-xl">Des erreurs sont survenu..</h1>
+                    }
                 </div>
             )}
             <div className="w-full flex justify-end gap-2">
                 {hasCompletedAllSteps ? (
-                    <Button size="sm" onClick={submit}>
+                    <Button size="sm" onClick={test}>
                         Valider la configuration
                     </Button>
                 ) : (
@@ -104,10 +125,10 @@ const Footer = ({submit}) => {
                             size="sm"
                             variant="secondary"
                         >
-                            Prev
+                            Précédent
                         </Button>
                         <Button size="sm" onClick={nextStep}>
-                            {isLastStep ? "Finish" : isOptionalStep ? "Skip" : "Next"}
+                            {isLastStep ? "Récapitulatif" : isOptionalStep ? "Skip" : "Suivant"}
                         </Button>
                     </>
                 )}
