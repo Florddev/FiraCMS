@@ -1,16 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import DataFetcher from '@/Components/DataFetcher';
-import AppPagination from "@/Components/App/AppPagination";
-import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-import useTranslationLoader from "@/Hooks/useTranslationLoader";
-import LanguageSelector from "@/Components/App/LanguageSelector.jsx";
 import {usePage} from "@inertiajs/react";
+import {useLaravelReactI18n} from "laravel-react-i18n";
+import {Button} from "@/Components/ui/button";
 
 const UserList = ({ defaultPerPage }) => {
     const { locale, availableLocales } = usePage().props;
-    const { t } = useTranslation();
-    const isLoaded = useTranslationLoader();
+    const { t, tChoice, setLocale, currentLocale } = useLaravelReactI18n();
 
     const [properties, setProperties] = useState({
         search: '',
@@ -30,19 +26,22 @@ const UserList = ({ defaultPerPage }) => {
         }));
     };
 
-    if (!isLoaded) {
-        return <div>Loading...</div>;
-    }
-
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">User List</h1>
 
-            <h1>{t('test.welcome')}</h1>
-            <LanguageSelector
-                currentLocale={locale}
-                availableLocales={availableLocales}
-            />
+            <div>
+                <h1>{t('messages.welcome')}</h1>
+                <p>{tChoice('messages.greeting', 10, {name: "florian"})}</p>
+                <p>Current language: {currentLocale()}</p>
+                <Button onClick={() => setLocale('fr')}>Switch to French</Button>
+                <Button onClick={() => setLocale('en')}>Switch to English</Button>
+            </div>
+            {/*<h1>{t('messages.welcome')}</h1>*/}
+            {/*<LanguageSelector*/}
+            {/*    currentLocale={locale}*/}
+            {/*    availableLocales={availableLocales}*/}
+            {/*/>*/}
 
             <div className="mb-4">
                 <input
