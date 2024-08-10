@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Plugin;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -35,6 +36,24 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+
+            $this->loadPluginRoutes();
         });
+    }
+
+    protected function loadPluginRoutes()
+    {
+        $pluginsPath = base_path('plugins');
+        $enabledPlugins = Plugin::where('enabled', true)->get();
+
+        foreach ($enabledPlugins as $plugin) {
+            $routesPath = "$pluginsPath/{$plugin->directory}/routes/web.php";
+
+            if (file_exists($routesPath)) {
+                Route::middleware(['web', 'auth', 'inertia'])  // Ajoutez ici tous les middlewares nécessaires
+                ->namespace('Plugins\\' . basename($plugin->directory) . '\Controllers')
+                    ->group($routesPath);
+            }
+        }
     }
 }

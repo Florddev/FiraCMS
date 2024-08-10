@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\InstallController;
+use App\Http\Controllers\PluginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
+Route::post('/plugins/{plugin}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle');
+Route::get('/plugins/scan', [PluginController::class, 'scan'])->name('plugins.scan');
+
 Route::get('/home', function () {
     return Inertia::render('Home');
 })->middleware(['auth', 'verified'])->name('home');
@@ -54,9 +59,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-
 Route::post('/change-locale', [LanguageController::class, 'changeLocale'])->name('change.locale');
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

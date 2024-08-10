@@ -1,0 +1,6 @@
+{
+    "name": "MonNouveauPlugin",
+    "description": "Description de votre plugin",
+    "version": "1.0.0",
+    "provider": "Plugins\\MonNouveauPlugin\\PluginServiceProvider"
+}

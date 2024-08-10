@@ -143,7 +143,7 @@ function AppLayout({ current_page, children }) {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="secondary">
-                                {auth.user.name}
+                                {auth?.user?.name}
                                 <CircleUser size="icon" className="rounded-full h-5 w-5 ml-2" />
                                 <span className="sr-only">Toggle user menu</span>
                             </Button>
