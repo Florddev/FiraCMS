@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Link, usePage} from "@inertiajs/react";
 import {
     Bell,
@@ -25,8 +25,10 @@ import {
     DropdownMenuTrigger
 } from "@/Components/ui/dropdown-menu";
 import {PluginHook} from "@/hooks.jsx";
+import MediaManager from "@/Components/App/MediaManager.jsx";
 
 function AppLayout({ current_page, children }) {
+    const [avatarPath, setAvatarPath] = useState('');
 
     const auth = usePage().props.auth;
 
@@ -161,6 +163,11 @@ function AppLayout({ current_page, children }) {
                     </DropdownMenu>
                 </header>
                 <main className="p-4 lg:p-6">
+
+                    <h2>Sélectionnez un avatar</h2>
+                    <img src={avatarPath} alt="Avatar" />
+                    <MediaManager setter={setAvatarPath} />
+
                     { children }
                     {/*<div className="flex items-center">*/}
                     {/*    <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>*/}

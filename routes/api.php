@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InstallController;
+use App\Http\Controllers\MediaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,3 +38,8 @@ Route::get('/translations/{locale}', function ($locale) {
     }
     return response()->json($translations);
 });
+
+Route::get('/medias', [MediaController::class, 'index']);
+Route::post('/medias', [MediaController::class, 'store']);
+Route::delete('/medias/{id}', [MediaController::class, 'destroy']);
+Route::get('/media/{fileName}', [MediaController::class, 'media'])->name('media');
