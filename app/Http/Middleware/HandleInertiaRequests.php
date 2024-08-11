@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Helpers\LocaleHelper;
+use App\Models\Plugin;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -43,6 +44,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'locale' => LocaleHelper::getUserLocale(),
             'availableLocales' => config('app.available_locales'),
+            'loadedPlugins' => Plugin::where('enabled', true)->get()
         ];
     }
 }
