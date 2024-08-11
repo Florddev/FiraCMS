@@ -50,7 +50,7 @@ class MakePlugin extends Command
 
         // Create basic files
         $this->createFile("{$path}/plugin.json", $this->getPluginJsonContent($name));
-        $this->createFile("{$path}/PluginServiceProvider.php", $this->getServiceProviderContent($name));
+        //$this->createFile("{$path}/PluginServiceProvider.php", $this->getServiceProviderContent($name));
         $this->createFile("{$path}/Controllers/{$studlyName}Controller.php", $this->getControllerContent($name));
         $this->createFile("{$path}/Models/{$studlyName}Model.php", $this->getModelContent($name));
         $this->createFile("{$path}/resources/js/index.js", $this->getIndexJsContent($name));

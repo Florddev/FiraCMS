@@ -1,66 +1,189 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CMS Laravel avec Système de Plugins (utilisant Laravel Sail)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Description
 
-## About Laravel
+Ce projet est un système de gestion de contenu (CMS) basé sur Laravel, intégrant un système de plugins avancé. Il utilise Laravel Sail pour une configuration de développement Docker simplifiée et offre des commandes Artisan personnalisées pour faciliter la gestion des plugins.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fonctionnalités principales
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Gestion des plugins**
+    - Ajout, activation, désactivation et suppression de plugins
+    - Détection automatique des nouveaux plugins
+    - Gestion des migrations de plugins
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. **Système de hooks**
+    - Permet aux plugins d'injecter du contenu à différents endroits du CMS
+    - Hooks front-end pour une intégration flexible dans l'interface utilisateur
 
-## Learning Laravel
+3. **Migrations automatisées**
+    - Exécution automatique des migrations lors de l'activation des plugins
+    - Rollback des migrations lors de la suppression des plugins
+    - Sauvegarde sécurisée des fichiers de migration
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. **Interface d'administration**
+    - Gestion des plugins via une interface utilisateur intuitive
+    - Vue d'ensemble des plugins installés et leur statut
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+5. **Intégration React et Inertia**
+    - Utilisation de React pour le front-end
+    - Intégration avec Inertia pour une expérience fluide entre le back-end et le front-end
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+6. **Commandes Artisan personnalisées**
+    - Création rapide de nouveaux plugins et de leurs composants
 
-## Laravel Sponsors
+## Exigences
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Docker
+- Docker Compose
+- Git
 
-### Premium Partners
+## Installation
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+1. Clonez le repository :
+   ```
+   git clone https://github.com/votre-repo/cms-laravel-plugins.git
+   cd cms-laravel-plugins
+   ```
 
-## Contributing
+2. Copiez le fichier `.env.example` en `.env` :
+   ```
+   cp .env.example .env
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Démarrez l'environnement Docker avec Sail :
+   ```
+   ./vendor/bin/sail up -d
+   ```
 
-## Code of Conduct
+4. Installez les dépendances PHP :
+   ```
+   ./vendor/bin/sail composer install
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. Générez la clé d'application :
+   ```
+   ./vendor/bin/sail artisan key:generate
+   ```
 
-## Security Vulnerabilities
+6. Exécutez les migrations :
+   ```
+   ./vendor/bin/sail artisan migrate
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+7. Installez les dépendances JavaScript et compilez les assets :
+   ```
+   ./vendor/bin/sail npm install
+   ./vendor/bin/sail npm run dev
+   ```
 
-## License
+## Configuration
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- La configuration de l'environnement de développement est gérée par Laravel Sail et Docker.
+- Assurez-vous que le dossier `storage/app/plugin_migrations` existe et a les bonnes permissions dans le conteneur.
+
+## Utilisation
+
+### Gestion des plugins
+
+Utilisez les commandes Artisan personnalisées suivantes pour gérer vos plugins :
+
+1. Créer un nouveau plugin :
+   ```
+   ./vendor/bin/sail artisan make:plugin PluginName
+   ```
+
+2. Créer un contrôleur pour un plugin :
+   ```
+   ./vendor/bin/sail artisan make:plugin-controller PluginName NouveauController
+   ```
+
+3. Créer une migration pour un plugin :
+   ```
+   ./vendor/bin/sail artisan make:plugin-migration PluginName create_newtables_table
+   ```
+
+4. Créer un modèle pour un plugin :
+   ```
+   ./vendor/bin/sail artisan make:plugin-model PluginName ModelName
+   ```
+
+### Activation et désactivation des plugins
+
+Accédez à l'interface d'administration des plugins via `/admin/plugins` dans votre navigateur.
+
+### Système de hooks
+
+Pour utiliser un hook dans un composant React :
+
+```jsx
+import { PluginHook } from '../hooks';
+
+function MonComposant() {
+  return (
+    <div>
+      {/* Votre contenu */}
+      <PluginHook name="nom-du-hook" />
+    </div>
+  );
+}
+```
+
+Dans votre plugin, enregistrez un composant pour ce hook :
+
+```jsx
+import { registerHook } from '/resources/js/hooks';
+import MonComposantPlugin from './components/MonComposantPlugin';
+
+registerHook('nom-du-hook', MonComposantPlugin);
+```
+
+## Structure d'un plugin
+
+Après avoir utilisé la commande `make:plugin`, votre plugin aura la structure suivante :
+
+```
+plugins/PluginName/
+├── src/
+│   ├── Controllers/
+│   ├── Models/
+│   └── PluginServiceProvider.php
+├── resources/
+│   ├── js/
+│   │   └── components/
+│   └── views/
+├── database/
+│   └── migrations/
+├── routes/
+│   └── web.php
+└── plugin.json
+```
+
+## Gestion des migrations
+
+- Les migrations des plugins sont automatiquement exécutées lors de l'activation du plugin.
+- En cas de suppression d'un plugin, les migrations sont automatiquement annulées.
+- Les fichiers de migration sont sauvegardés pour permettre le rollback même après la suppression des sources du plugin.
+
+## Développement avec Sail
+
+- Utilisez `./vendor/bin/sail` comme préfixe pour toutes les commandes Laravel et npm.
+- Pour entrer dans le conteneur : `./vendor/bin/sail shell`
+- Pour arrêter l'environnement : `./vendor/bin/sail down`
+
+## Contribution
+
+Les contributions sont les bienvenues ! Veuillez suivre ces étapes :
+
+1. Forkez le repository
+2. Créez une branche pour votre fonctionnalité (`git checkout -b ma-nouvelle-fonctionnalite`)
+3. Committez vos changements (`git commit -am 'Ajout de quelque chose'`)
+4. Poussez vers la branche (`git push origin ma-nouvelle-fonctionnalite`)
+5. Créez une nouvelle Pull Request
+
+## Licence
+
+[MIT License](https://opensource.org/licenses/MIT)
+
+## Support
+
+Pour toute question ou problème, veuillez ouvrir un ticket dans la section Issues du repository GitHub.

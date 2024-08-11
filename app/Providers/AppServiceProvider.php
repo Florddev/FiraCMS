@@ -22,22 +22,18 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-//    public function boot(): void
-//    {
-//        $pluginService = new PluginService();
-//        $pluginService->loadPlugins();
-//    }
-    public function boot()
+    public function boot(PluginService $pluginService)
     {
-        $enabledPlugins = Plugin::where('enabled', true)->get();
-
-        foreach ($enabledPlugins as $plugin) {
-            $providerClass = "Plugins\\{$plugin->directory}\\PluginServiceProvider";
-            if (class_exists($providerClass)) {
-                $this->app->register($providerClass);
-            } else {
-                Log::warning("Provider non trouvé : $providerClass");
-            }
-        }
+        $pluginService->scanPlugins();
+//        $enabledPlugins = Plugin::where('enabled', true)->get();
+//
+//        foreach ($enabledPlugins as $plugin) {
+//            $providerClass = "Plugins\\{$plugin->directory}\\PluginServiceProvider";
+//            if (class_exists($providerClass)) {
+//                $this->app->register($providerClass);
+//            } else {
+//                Log::warning("Provider non trouvé : $providerClass");
+//            }
+//        }
     }
 }
