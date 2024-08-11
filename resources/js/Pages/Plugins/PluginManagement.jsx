@@ -5,6 +5,7 @@ import { Button } from '@/Components/ui/button';
 import { Switch } from '@/Components/ui/switch';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/Components/ui/alert';
+import AppLayout from "@/Layouts/AppLayout.jsx";
 
 const PluginCard = ({ plugin, onToggle }) => {
     const [isEnabled, setIsEnabled] = useState(plugin.enabled);
@@ -71,8 +72,8 @@ const PluginList = ({ plugins }) => {
 
 export default function PluginManagement({ plugins }) {
     return (
-        <div className="container mx-auto py-8">
+        <AppLayout current_page="plugins">
             <PluginList plugins={plugins} />
-        </div>
+        </AppLayout>
     );
 }

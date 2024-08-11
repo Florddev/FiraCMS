@@ -1,13 +1,10 @@
 
 import React from 'react';
 import { usePage } from '@inertiajs/react';
-import AppLayout from "@/Layouts/AppLayout.jsx";
+import AppLayout from "@/Layouts/AppLayout";
 
 export default function PluginComponent({ testProp, pluginData }) {
     const {locale, auth} = usePage().props;
-
-    console.log('Toutes les props reçues:', usePage().props);
-    console.log('Props spécifiques au plugin:', { testProp, pluginData });
 
     return (
         <AppLayout>

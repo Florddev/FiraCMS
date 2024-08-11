@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
@@ -14,37 +15,48 @@ class MakePlugin extends Command
     public function handle()
     {
         $name = $this->argument('name');
+
+//        $this->call('make:migration', [
+//            'name' => $name, '--path' => '/plugin/'
+//        ]);
+
         $pluginPath = base_path("plugins/{$name}");
 
         if (File::exists($pluginPath)) {
             $this->error("Plugin {$name} already exists!");
+            $this->components->error(sprintf('Plugin [%s] already exists.', $name));
             return;
         }
 
         $this->createPluginStructure($name, $pluginPath);
-        $this->info("Plugin {$name} created successfully!");
+        $this->components->info(sprintf('Plugin [%s] created successfully.', $name));
     }
 
     protected function createPluginStructure($name, $path)
     {
+        $studlyName = Str::studly($name);
+
         // Create main directories
         File::makeDirectory($path, 0755, true);
-        File::makeDirectory("{$path}/src", 0755, true);
-        File::makeDirectory("{$path}/src/Controllers", 0755, true);
-        File::makeDirectory("{$path}/src/Models", 0755, true);
+        File::makeDirectory("{$path}/Controllers", 0755, true);
+        File::makeDirectory("{$path}/Models", 0755, true);
         File::makeDirectory("{$path}/resources", 0755, true);
         File::makeDirectory("{$path}/resources/js", 0755, true);
         File::makeDirectory("{$path}/resources/js/Components", 0755, true);
+        File::makeDirectory("{$path}/resources/js/Pages", 0755, true);
         File::makeDirectory("{$path}/database", 0755, true);
         File::makeDirectory("{$path}/database/migrations", 0755, true);
+        File::makeDirectory("{$path}/routes", 0755, true);
 
         // Create basic files
         $this->createFile("{$path}/plugin.json", $this->getPluginJsonContent($name));
-        $this->createFile("{$path}/src/PluginServiceProvider.php", $this->getServiceProviderContent($name));
-        $this->createFile("{$path}/src/Controllers/PluginController.php", $this->getControllerContent($name));
-        $this->createFile("{$path}/src/Models/PluginModel.php", $this->getModelContent($name));
-        $this->createFile("{$path}/resources/js/Components/PluginComponent.jsx", $this->getComponentContent($name));
-        $this->createFile("{$path}/routes.php", $this->getRoutesContent($name));
+        $this->createFile("{$path}/PluginServiceProvider.php", $this->getServiceProviderContent($name));
+        $this->createFile("{$path}/Controllers/{$studlyName}Controller.php", $this->getControllerContent($name));
+        $this->createFile("{$path}/Models/{$studlyName}Model.php", $this->getModelContent($name));
+        $this->createFile("{$path}/resources/js/index.js", $this->getIndexJsContent($name));
+        $this->createFile("{$path}/resources/js/Components/{$studlyName}Navigation.jsx", $this->getComponentContent($name));
+        $this->createFile("{$path}/resources/js/Pages/Index.jsx", $this->getPageContent($name));
+        $this->createFile("{$path}/routes/web.php", $this->getRoutesContent($name));
     }
 
     protected function createFile($path, $content)
@@ -81,9 +93,7 @@ class PluginServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        \$this->loadRoutesFrom(__DIR__ . '/../routes.php');
-        \$this->loadViewsFrom(__DIR__ . '/../resources/views', '{$name}');
-        \$this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        \$this->loadMigrationsFrom(__DIR__ . '/database/migrations');
     }
 }
 PHP;
@@ -100,11 +110,11 @@ namespace Plugins\\{$studlyName}\Controllers;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 
-class PluginController extends Controller
+class {$studlyName}Controller extends Controller
 {
     public function index()
     {
-        return Inertia::render('{$studlyName}::PluginComponent');
+        return Inertia::render('{$studlyName}::Index');
     }
 }
 PHP;
@@ -120,24 +130,53 @@ namespace Plugins\\{$studlyName}\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PluginModel extends Model
+class {$studlyName}Model extends Model
 {
     protected \$fillable = [];
 }
 PHP;
     }
 
+    protected function getPageContent($name)
+    {
+        $studlyName = Str::studly($name);
+        return <<<JSX
+import React from 'react';
+import AppLayout from "@/Layouts/AppLayout";
+
+export default function Index() {
+    return (
+        <AppLayout>
+            <div>{$name} Plugin</div>
+            {/* Add your plugin content here */}
+        </AppLayout>
+    );
+}
+JSX;
+    }
+
+    protected function getIndexJsContent($name)
+    {
+        $studlyName = Str::studly($name);
+        return <<<JS
+import { registerHook } from '/resources/js/hooks';
+import {$studlyName}Navigation from './Components/{$studlyName}Navigation';
+
+export default function(pluginName) {
+    registerHook('dashboard-navigation', {$studlyName}Navigation, pluginName);
+}
+JS;
+    }
+
     protected function getComponentContent($name)
     {
+        $studlyName = Str::studly($name);
         return <<<JSX
 import React from 'react';
 
-export default function PluginComponent() {
+export default function {$studlyName}Navigation() {
     return (
-        <div>
-            <h1>{$name} Plugin</h1>
-            {/* Add your plugin content here */}
-        </div>
+        <div>{$name}'s Navigation</div>
     );
 }
 JSX;
@@ -150,10 +189,10 @@ JSX;
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Plugins\\{$studlyName}\Controllers\PluginController;
+use Plugins\\{$studlyName}\Controllers\\{$studlyName}Controller;
 
-Route::middleware(['web', 'auth'])->group(function () {
-    Route::get('/{$name}', [PluginController::class, 'index'])->name('{$name}.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/{$name}', [{$studlyName}Controller::class, 'index'])->name('{$name}.index');
 });
 PHP;
     }

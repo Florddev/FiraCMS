@@ -24,6 +24,7 @@ import {
     DropdownMenuLabel, DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/Components/ui/dropdown-menu";
+import {PluginHook} from "@/hooks.jsx";
 
 function AppLayout({ current_page, children }) {
 
@@ -34,35 +35,34 @@ function AppLayout({ current_page, children }) {
     }
 
     const navigation = (
-        <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-            <Link href="#" className={navLinksClass(current_page === 'home')}>
-                <Home className="h-4 w-4" />
-                Accueil
-            </Link>
-            <Link href="#" className={navLinksClass(current_page === 'users')}>
-                <Users className="h-4 w-4" />
-                Utilisateurs
-            </Link>
-            <Link href="#" className={navLinksClass(current_page === 'medias')}>
-                <Image className="h-4 w-4" />
-                Médias
-            </Link>
-            <Link href="#" className={navLinksClass(current_page === 'apparence')}>
-                <Flower className="h-4 w-4" />
-                Apparence
-            </Link>
-            <Link href="#" className={navLinksClass(current_page === 'plugins')}>
-                <Blocks className="h-4 w-4" />
-                Extentions
-                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                    6
-                </Badge>
-            </Link>
-            <Link href="#" className={navLinksClass(current_page === 'more')}>
-                <CirclePlus className="h-4 w-4" />
-                Plus
-            </Link>
-        </nav>
+        <>
+            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+                <Link href="#" className={navLinksClass(current_page === 'home')}>
+                    <Home className="h-4 w-4" />
+                    Accueil
+                </Link>
+                <Link href="#" className={navLinksClass(current_page === 'users')}>
+                    <Users className="h-4 w-4" />
+                    Utilisateurs
+                </Link>
+                <Link href="#" className={navLinksClass(current_page === 'medias')}>
+                    <Image className="h-4 w-4" />
+                    Médias
+                </Link>
+                <Link href="#" className={navLinksClass(current_page === 'apparence')}>
+                    <Flower className="h-4 w-4" />
+                    Apparence
+                </Link>
+                <Link href="#" className={navLinksClass(current_page === 'plugins')}>
+                    <Blocks className="h-4 w-4" />
+                    Extentions
+                    <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                        6
+                    </Badge>
+                </Link>
+            </nav>
+            <PluginHook name="dashboard-navigation" />
+        </>
     );
 
     return (

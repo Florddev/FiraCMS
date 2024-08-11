@@ -47,32 +47,4 @@ class PluginService
         $plugin->save();
     }
 
-//    public function loadPlugins()
-//    {
-//        $enabledPlugins = Plugin::where('enabled', true)->get();
-//
-//        $loadedPlugins = [];
-//
-//        foreach ($enabledPlugins as $plugin) {
-//            $pluginPath = $this->pluginsPath . '/' . $plugin->directory;
-//
-//            // Load plugin's service provider
-//            $providerClass = "Plugins\\{$plugin->directory}\\PluginServiceProvider";
-//            if (class_exists($providerClass)) {
-//                app()->register($providerClass);
-//            }
-//
-//            // Check for plugin's main JavaScript file
-//            $jsPath = "{$pluginPath}/resources/js/PluginComponent.jsx";
-//            if (file_exists($jsPath)) {
-//                $loadedPlugins[] = [
-//                    'name' => $plugin->name,
-//                    'directory' => $plugin->directory,
-//                ];
-//            }
-//        }
-//
-//        // Pass loaded plugins to the frontend
-//        Inertia::share('loadedPlugins', $loadedPlugins);
-//    }
 }
