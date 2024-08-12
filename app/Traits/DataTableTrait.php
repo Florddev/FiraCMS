@@ -70,11 +70,20 @@ trait DataTableTrait
             }
         }
 
+        // Gérer la sélection
+        $selectedIds = $request->input('selected_ids') ? explode(',', $request->input('selected_ids')) : [];
+
         // Appliquer la pagination
         $page = $request->input('page', 1);
         $perPage = $request->input('per_page', $options['defaultPerPage'] ?? 10);
 
         $data = $query->paginate($perPage, ['*'], 'page', $page);
+
+        // Marquer les lignes sélectionnées
+        $data->getCollection()->transform(function ($item) use ($selectedIds) {
+            $item->isSelected = in_array($item->id, $selectedIds);
+            return $item;
+        });
 
         return response()->json([
             'data' => $data->items(),
@@ -84,6 +93,7 @@ trait DataTableTrait
             'to' => $data->lastItem(),
             'currentPage' => $data->currentPage(),
             'perPage' => $data->perPage(),
+            'selectedIds' => $selectedIds,
         ]);
     }
 }

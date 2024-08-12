@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 import LaravelDataTable from '@/Components/LaravelDataTable';
 import axios from 'axios';
+import {Button} from "@/Components/ui/button";
 
 const UserTable = () => {
     const columns = [
@@ -34,7 +35,10 @@ const UserTable = () => {
         },
     ];
 
-    const fetchData = async ({ pagination, sorting, columnFilters, globalFilter }) => {
+    const [selectedUserIds, setSelectedUserIds] = useState([]);
+
+
+    const fetchData = useCallback(async ({ pagination, sorting, columnFilters, globalFilter, selectedIds }) => {
         try {
             const response = await axios.get('/api/datatable/users', {
                 params: {
@@ -43,6 +47,7 @@ const UserTable = () => {
                     sort: sorting.map(s => `${s.id}:${s.desc ? 'desc' : 'asc'}`).join(','),
                     filters: JSON.stringify(columnFilters),
                     search: globalFilter,
+                    selected_ids: selectedIds.join(','),
                 }
             });
             return response.data;
@@ -54,11 +59,24 @@ const UserTable = () => {
                 total: 0,
             };
         }
-    };
+    }, []);
+
+    const handleSelectionChange = useCallback((selectedIds) => {
+        setSelectedUserIds(selectedIds);
+        console.log('Selected user IDs:', selectedIds);
+    }, []);
 
     return (
         <div>
             <h1>User List</h1>
+            {selectedUserIds.length > 0 && (
+                <div>
+                    {selectedUserIds.length} user(s) selected
+                    <button onClick={() => { alert(selectedUserIds.join(', ')) }}>
+                        Perform Action
+                    </button>
+                </div>
+            )}
             <LaravelDataTable
                 columns={columns}
                 fetchData={fetchData}
@@ -69,6 +87,9 @@ const UserTable = () => {
                     total: 0,
                     last_page: 1,
                 }}
+                enableRowSelection={true}
+                onSelectionChange={handleSelectionChange}
+                selectionField="id"
             />
         </div>
     );
