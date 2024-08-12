@@ -5,7 +5,13 @@ import { Input } from "@/Components/ui/input";
 import { DataTableViewOptions } from "@/Components/DataTableViewOptions";
 import { DataTableFacetedFilter } from "@/Components/DataTableFacetedFilter";
 
-export function DataTableToolbar({ table, globalFilter, onGlobalFilterChange }) {
+export function DataTableToolbar({
+    table,
+    globalFilter,
+    onGlobalFilterChange,
+    deselectAll,
+    selectedCount
+}) {
     const isFiltered = table.getState().columnFilters.length > 0 || globalFilter !== '';
 
     return (
@@ -44,7 +50,18 @@ export function DataTableToolbar({ table, globalFilter, onGlobalFilterChange }) 
                     </Button>
                 )}
             </div>
-            <DataTableViewOptions table={table} />
+            <div className="flex items-center space-x-2">
+                {selectedCount > 0 && (
+                    <Button
+                        variant="destructive"
+                        onClick={deselectAll}
+                        className="h-8 px-2 lg:px-3"
+                    >
+                        Deselect All ({selectedCount})
+                    </Button>
+                )}
+                <DataTableViewOptions table={table} />
+            </div>
         </div>
     );
 }

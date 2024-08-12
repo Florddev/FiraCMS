@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     flexRender,
     getCoreRowModel,
@@ -18,10 +18,19 @@ import {
     TableRow,
 } from "@/Components/ui/table";
 import { useDebounce } from "@/Hooks/useDebounce.js";
+import { Checkbox } from "@/Components/ui/checkbox";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import TableSkeleton from "@/Components/TableSkeleton";
+import {ArrowDownIcon, ArrowUpIcon, CaretSortIcon} from "@radix-ui/react-icons";
 
-const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComplete }) => {
+const LaravelDataTable = ({
+                              columns,
+                              fetchData,
+                              initialData,
+                              enableRowSelection = false,
+                              onSelectionChange = () => {},
+                              selectionField = 'id'
+                          }) => {
     const [data, setData] = useState(initialData.data);
     const [pagination, setPagination] = useState({
         pageIndex: 0,
@@ -33,6 +42,7 @@ const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComple
     const [globalFilter, setGlobalFilter] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [selectedRowIds, setSelectedRowIds] = useState(new Set());
 
     const debouncedGlobalFilter = useDebounce(globalFilter, 300);
 
@@ -44,6 +54,7 @@ const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComple
                 sorting,
                 columnFilters,
                 globalFilter: debouncedGlobalFilter,
+                selectedIds: Array.from(selectedRowIds),
             });
             setData(fetchedData.data);
             setPageCount(fetchedData.pageCount);
@@ -55,26 +66,77 @@ const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComple
                 setIsInitialLoad(false);
             }
         }
-    }, [pagination, sorting, columnFilters, debouncedGlobalFilter, fetchData, isInitialLoad]);
+    }, [pagination, sorting, columnFilters, debouncedGlobalFilter, fetchData, isInitialLoad, selectedRowIds]);
 
     useEffect(() => {
         loadData();
     }, [loadData]);
 
+    const selectedItems = useMemo(() => {
+        return Array.from(selectedRowIds);
+    }, [selectedRowIds]);
+
     useEffect(() => {
-        if (!isInitialLoad && onInitialLoadComplete) {
-            onInitialLoadComplete();
+        onSelectionChange(selectedItems);
+    }, [selectedItems, onSelectionChange]);
+
+    const deselectAll = useCallback(() => {
+        setSelectedRowIds(new Set());
+    }, []);
+
+    const tableColumns = useMemo(() => {
+        if (enableRowSelection) {
+            return [
+                {
+                    id: 'select',
+                    header: ({ table }) => (
+                        <Checkbox
+                            checked={data.every(row => selectedRowIds.has(row.id))}
+                            onCheckedChange={(value) => {
+                                setSelectedRowIds(prev => {
+                                    const newSet = new Set(prev);
+                                    data.forEach(row => {
+                                        if (value) {
+                                            newSet.add(row.id);
+                                        } else {
+                                            newSet.delete(row.id);
+                                        }
+                                    });
+                                    return newSet;
+                                });
+                            }}
+                            aria-label="Select all"
+                        />
+                    ),
+                    cell: ({ row }) => (
+                        <Checkbox
+                            checked={selectedRowIds.has(row.original.id)}
+                            onCheckedChange={(value) => {
+                                setSelectedRowIds(prev => {
+                                    const newSet = new Set(prev);
+                                    if (value) {
+                                        newSet.add(row.original.id);
+                                    } else {
+                                        newSet.delete(row.original.id);
+                                    }
+                                    return newSet;
+                                });
+                            }}
+                            aria-label="Select row"
+                        />
+                    ),
+                    enableSorting: false,
+                    enableHiding: false,
+                },
+                ...columns
+            ];
         }
-    }, [isInitialLoad, onInitialLoadComplete]);
-
-    const handlePaginationChange = useCallback((newPagination) => {
-        setPagination(newPagination);
-        loadData();
-    }, [loadData]);
+        return columns;
+    }, [enableRowSelection, columns, selectedRowIds, data]);
 
     const table = useReactTable({
         data,
-        columns,
+        columns: tableColumns,
         pageCount: pageCount,
         state: {
             pagination,
@@ -82,11 +144,8 @@ const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComple
             columnFilters,
             globalFilter,
         },
-        onPaginationChange: handlePaginationChange,
-        onSortingChange: (updatedSorting) => {
-            setSorting(updatedSorting);
-            setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        },
+        onPaginationChange: setPagination,
+        onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
         getCoreRowModel: getCoreRowModel(),
@@ -98,6 +157,7 @@ const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComple
         manualFiltering: true,
     });
 
+
     return (
         <div className="space-y-4">
             <DataTableToolbar
@@ -105,10 +165,12 @@ const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComple
                 globalFilter={globalFilter}
                 onGlobalFilterChange={setGlobalFilter}
                 isInitialLoad={isInitialLoad}
+                deselectAll={deselectAll}
+                selectedCount={selectedItems.length}
             />
             <div className="rounded-md border">
                 {isInitialLoad ? (
-                    <TableSkeleton columns={columns} rowCount={pagination.pageSize} />
+                    <TableSkeleton columns={tableColumns} rowCount={pagination.pageSize} />
                 ) : (
                     <Table>
                         <TableHeader>
@@ -130,10 +192,10 @@ const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComple
                                                         header.getContext()
                                                     )}
                                                     {{
-                                                        asc: <ArrowUp className="ml-2 h-4 w-4" />,
-                                                        desc: <ArrowDown className="ml-2 h-4 w-4" />,
+                                                        asc: <ArrowUpIcon className="ml-2 h-4 w-4" />,
+                                                        desc: <ArrowDownIcon className="ml-2 h-4 w-4" />,
                                                     }[header.column.getIsSorted()] ?? (
-                                                        header.column.getCanSort() && <ArrowUpDown className="ml-2 h-4 w-4" />
+                                                        header.column.getCanSort() && <CaretSortIcon className="ml-2 h-4 w-4" />
                                                     )}
                                                 </div>
                                             )}
@@ -147,7 +209,7 @@ const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComple
                                 table.getRowModel().rows.map((row) => (
                                     <TableRow
                                         key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
+                                        data-state={selectedRowIds.has(row.original.id) && "selected"}
                                     >
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id}>
@@ -158,7 +220,7 @@ const LaravelDataTable = ({ columns, fetchData, initialData, onInitialLoadComple
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    <TableCell colSpan={tableColumns.length} className="h-24 text-center">
                                         No results.
                                     </TableCell>
                                 </TableRow>
