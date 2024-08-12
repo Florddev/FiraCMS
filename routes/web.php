@@ -73,4 +73,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/users/destroy-multiple', [UserController::class, 'destroyMultiple'])->name('users.destroyMultiple');
 });
 
+Route::get('test', function () {
+    return Inertia::render('Test');
+});
+
 require __DIR__.'/auth.php';

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DataTableController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\MediaController;
 use Illuminate\Http\Request;
@@ -43,3 +44,6 @@ Route::get('/medias', [MediaController::class, 'index']);
 Route::post('/medias', [MediaController::class, 'store']);
 Route::delete('/medias/{id}', [MediaController::class, 'destroy']);
 Route::get('/media/{fileName}', [MediaController::class, 'media'])->name('media');
+
+
+Route::get('/datatable/users', [DataTableController::class, 'getUsers']);
