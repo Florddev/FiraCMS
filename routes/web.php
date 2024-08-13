@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -70,6 +72,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
 
     Route::resource('users', UserController::class);
+    Route::resource('roles', RoleController::class);
+    Route::resource('permissions', PermissionController::class);
+
     Route::delete('/users/destroy-multiple', [UserController::class, 'destroyMultiple'])->name('users.destroyMultiple');
 });
 

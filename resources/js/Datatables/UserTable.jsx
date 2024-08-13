@@ -5,11 +5,11 @@ import {Button} from "@/Components/ui/button";
 
 const UserTable = () => {
     const columns = [
-        {
-            accessorKey: "id",
-            header: "ID",
-            enableSorting: false,
-        },
+        // {
+        //     accessorKey: "id",
+        //     header: "ID",
+        //     enableSorting: false,
+        // },
         {
             accessorKey: "name",
             header: "Name",
@@ -83,7 +83,6 @@ const UserTable = () => {
 
     return (
         <div>
-            <h1>User List</h1>
             {selectedUserIds.length > 0 && (
                 <div>
                     {selectedUserIds.length} user(s) selected
@@ -104,6 +103,7 @@ const UserTable = () => {
                 enableRowSelection={true}
                 onSelectionChange={handleSelectionChange}
                 selectionField="id"
+                className="border-0"
             />
         </div>
     );

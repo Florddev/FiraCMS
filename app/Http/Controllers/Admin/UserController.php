@@ -6,41 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        $query = User::query();
-
-        // Tri
-        if ($request->has('sort')) {
-            $sortField = $request->input('sort');
-            $sortDirection = $request->input('direction', 'asc');
-            $query->orderBy($sortField, $sortDirection);
-        }
-
-        // Recherche
-        if ($request->has('search')) {
-            $searchTerm = $request->input('search');
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('name', 'like', "%{$searchTerm}%")
-                    ->orWhere('email', 'like', "%{$searchTerm}%");
-                // Ajoutez d'autres champs si nécessaire
-            });
-        }
-
-        // Pagination
-        $users = $query->paginate(10)->withQueryString();
-
-        return Inertia::render('Admin/User/Index', [
-            'users' => $users,
-            'filters' => $request->only(['search', 'sort', 'direction']),
-        ]);
-    }
 
     public function list(Request $request)
     {
@@ -70,6 +40,12 @@ class UserController extends Controller
 
 
 
+    public function index()
+    {
+        $users = User::with('roles', 'permissions')->get();
+        return Inertia::render('Admin/User/Index', ['users' => $users]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -97,17 +73,33 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+
+    public function edit(User $user)
     {
-        //
+        $roles = Role::all();
+        $permissions = Permission::all();
+        return Inertia::render('Admin/User/Edit', [
+            'user' => $user->load('roles', 'permissions'),
+            'allRoles' => $roles,
+            'allPermissions' => $permissions,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+
+    public function update(Request $request, User $user)
     {
-        //
+        $validated = $request->validate([
+            'roles' => 'array',
+            'permissions' => 'array',
+        ]);
+
+        $user->syncRoles($validated['roles'] ?? []);
+        $user->syncPermissions($validated['permissions'] ?? []);
+
+        return redirect()->route('users.index')->with('success', 'User updated successfully');
     }
 
     /**

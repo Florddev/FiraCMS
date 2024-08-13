@@ -29,7 +29,8 @@ const LaravelDataTable = forwardRef(({
                                          initialData,
                                          enableRowSelection = false,
                                          onSelectionChange = () => {},
-                                         selectionField = 'id'
+                                         selectionField = 'id',
+                                        ...props
                                      }, ref) => {
     const [data, setData] = useState(initialData.data);
     const [pagination, setPagination] = useState({
@@ -174,7 +175,7 @@ const LaravelDataTable = forwardRef(({
                 deselectAll={deselectAll}
                 selectedCount={selectedItems.length}
             />
-            <div className="rounded-md border">
+            <div className="rounded-md border" {...props}>
                 {isInitialLoad ? (
                     <TableSkeleton columns={tableColumns} rowCount={pagination.pageSize} />
                 ) : (

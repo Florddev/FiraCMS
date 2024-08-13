@@ -26,6 +26,7 @@ import {
 } from "@/Components/ui/dropdown-menu";
 import {PluginHook} from "@/hooks.jsx";
 import MediaManager from "@/Components/App/MediaManager.jsx";
+import ApplicationLogo from "@/Components/ApplicationLogo.jsx";
 
 function AppLayout({ current_page, children }) {
     const [avatarPath, setAvatarPath] = useState('');
@@ -72,9 +73,9 @@ function AppLayout({ current_page, children }) {
             <div className="hidden border-r bg-muted/40 md:block sticky top-0 max-h-screen">
                 <div className="flex h-full max-h-screen flex-col gap-2">
                     <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-                        <Link href="/" className="flex items-center gap-2 font-semibold">
-                            <Package2 className="h-6 w-6" />
-                            <span className="">FiraCMS</span>
+                        <Link href="/" className="flex items-center gap-3 font-semibold">
+                            <ApplicationLogo className="h-6 w-6 fill-primary" />
+                            <span className="">Nexius</span>
                         </Link>
                         <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
                             <Bell className="h-4 w-4" />
@@ -164,27 +165,11 @@ function AppLayout({ current_page, children }) {
                 </header>
                 <main className="p-4 lg:p-6">
 
-                    <h2>Sélectionnez un avatar</h2>
-                    <img src={avatarPath} alt="Avatar" />
-                    <MediaManager setter={setAvatarPath} />
+                    {/*<h2>Sélectionnez un avatar</h2>*/}
+                    {/*<img src={avatarPath} alt="Avatar" />*/}
+                    {/*<MediaManager setter={setAvatarPath} />*/}
 
                     { children }
-                    {/*<div className="flex items-center">*/}
-                    {/*    <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>*/}
-                    {/*</div>*/}
-                    {/*<div*/}
-                    {/*    className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm" x-chunk="dashboard-02-chunk-1"*/}
-                    {/*>*/}
-                    {/*    <div className="flex flex-col items-center gap-1 text-center">*/}
-                    {/*        <h3 className="text-2xl font-bold tracking-tight">*/}
-                    {/*            You have no products*/}
-                    {/*        </h3>*/}
-                    {/*        <p className="text-sm text-muted-foreground">*/}
-                    {/*            You can start selling as soon as you add a product.*/}
-                    {/*        </p>*/}
-                    {/*        <Button className="mt-4">Add Product</Button>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
                 </main>
             </div>
         </div>

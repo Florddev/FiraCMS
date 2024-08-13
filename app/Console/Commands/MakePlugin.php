@@ -55,7 +55,7 @@ class MakePlugin extends Command
         $this->createFile("{$path}/Models/{$studlyName}Model.php", $this->getModelContent($name));
         $this->createFile("{$path}/resources/js/index.js", $this->getIndexJsContent($name));
         $this->createFile("{$path}/resources/js/Components/{$studlyName}Navigation.jsx", $this->getComponentContent($name));
-        $this->createFile("{$path}/resources/js/Pages/Index.jsx", $this->getPageContent($name));
+        $this->createFile("{$path}/resources/js/Pages/Create.jsx", $this->getPageContent($name));
         $this->createFile("{$path}/routes/web.php", $this->getRoutesContent($name));
     }
 
