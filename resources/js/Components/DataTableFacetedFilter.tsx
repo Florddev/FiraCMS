@@ -66,7 +66,7 @@ export function DataTableFacetedFilter({ column, title, options }) {
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0" align="start">
                 <Command>
-                    <CommandInput placeholder={title} className="border-0" style={{'box-shadow': 'none'}} />
+                    <CommandInput placeholder={title} className="border-0" style={{'boxShadow': 'none'}} />
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
                         <CommandGroup>

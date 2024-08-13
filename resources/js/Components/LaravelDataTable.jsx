@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useImperativeHandle, forwardRef } from 'react';
 import {
     flexRender,
     getCoreRowModel,
@@ -23,14 +23,14 @@ import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import TableSkeleton from "@/Components/TableSkeleton";
 import {ArrowDownIcon, ArrowUpIcon, CaretSortIcon} from "@radix-ui/react-icons";
 
-const LaravelDataTable = ({
-                              columns,
-                              fetchData,
-                              initialData,
-                              enableRowSelection = false,
-                              onSelectionChange = () => {},
-                              selectionField = 'id'
-                          }) => {
+const LaravelDataTable = forwardRef(({
+                                         columns,
+                                         fetchData,
+                                         initialData,
+                                         enableRowSelection = false,
+                                         onSelectionChange = () => {},
+                                         selectionField = 'id'
+                                     }, ref) => {
     const [data, setData] = useState(initialData.data);
     const [pagination, setPagination] = useState({
         pageIndex: 0,
@@ -45,6 +45,12 @@ const LaravelDataTable = ({
     const [selectedRowIds, setSelectedRowIds] = useState(new Set());
 
     const debouncedGlobalFilter = useDebounce(globalFilter, 300);
+
+    const selectedItems = useMemo(() => Array.from(selectedRowIds), [selectedRowIds]);
+
+    const currentPageSelectedCount = useMemo(() => {
+        return data.filter(row => selectedRowIds.has(row.id)).length;
+    }, [data, selectedRowIds]);
 
     const loadData = useCallback(async () => {
         setIsLoading(true);
@@ -72,10 +78,6 @@ const LaravelDataTable = ({
         loadData();
     }, [loadData]);
 
-    const selectedItems = useMemo(() => {
-        return Array.from(selectedRowIds);
-    }, [selectedRowIds]);
-
     useEffect(() => {
         onSelectionChange(selectedItems);
     }, [selectedItems, onSelectionChange]);
@@ -84,6 +86,10 @@ const LaravelDataTable = ({
         setSelectedRowIds(new Set());
     }, []);
 
+    useImperativeHandle(ref, () => ({
+        deselectAll
+    }));
+
     const tableColumns = useMemo(() => {
         if (enableRowSelection) {
             return [
@@ -91,7 +97,7 @@ const LaravelDataTable = ({
                     id: 'select',
                     header: ({ table }) => (
                         <Checkbox
-                            checked={data.every(row => selectedRowIds.has(row.id))}
+                            checked={data.length > 0 && data.every(row => selectedRowIds.has(row.id))}
                             onCheckedChange={(value) => {
                                 setSelectedRowIds(prev => {
                                     const newSet = new Set(prev);
@@ -229,9 +235,14 @@ const LaravelDataTable = ({
                     </Table>
                 )}
             </div>
-            <DataTablePagination table={table} />
+            <DataTablePagination
+                table={table}
+                totalSelectedCount={selectedItems.length}
+                currentPageSelectedCount={currentPageSelectedCount}
+                totalRowCount={data.length}
+            />
         </div>
     );
-};
+});
 
 export default LaravelDataTable;

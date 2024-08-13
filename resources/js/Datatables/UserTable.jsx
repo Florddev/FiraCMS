@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import LaravelDataTable from '@/Components/LaravelDataTable';
 import axios from 'axios';
 import {Button} from "@/Components/ui/button";
@@ -36,7 +36,7 @@ const UserTable = () => {
     ];
 
     const [selectedUserIds, setSelectedUserIds] = useState([]);
-
+    const dataTableRef = useRef();
 
     const fetchData = useCallback(async ({ pagination, sorting, columnFilters, globalFilter, selectedIds }) => {
         try {
@@ -66,18 +66,32 @@ const UserTable = () => {
         console.log('Selected user IDs:', selectedIds);
     }, []);
 
+    const performAction = async () => {
+        try {
+            alert(selectedUserIds.join(', '))
+
+            // Après l'action réussie, désélectionner toutes les lignes
+            dataTableRef.current.deselectAll();
+
+            // Optionnel : Afficher un message de succès ou rafraîchir les données
+            console.log('Action performed successfully');
+        } catch (error) {
+            console.error('Error performing action:', error);
+            // Gérer l'erreur (par exemple, afficher un message d'erreur)
+        }
+    };
+
     return (
         <div>
             <h1>User List</h1>
             {selectedUserIds.length > 0 && (
                 <div>
                     {selectedUserIds.length} user(s) selected
-                    <button onClick={() => { alert(selectedUserIds.join(', ')) }}>
-                        Perform Action
-                    </button>
+                    <Button onClick={performAction}>Perform Action</Button>
                 </div>
             )}
             <LaravelDataTable
+                ref={dataTableRef}
                 columns={columns}
                 fetchData={fetchData}
                 initialData={{
