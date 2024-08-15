@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Models\Plugin;
+use App\Services\TemplateManagementService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -37,6 +39,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
 
+            $this->loadTemplatesRoutes();
             $this->loadPluginRoutes();
         });
     }
@@ -55,5 +58,27 @@ class RouteServiceProvider extends ServiceProvider
                     ->group($routesPath);
             }
         }
+    }
+
+    protected function loadTemplatesRoutes()
+    {
+
+        Route::middleware(['web', 'inertia'])
+            ->group(function() {
+                $template = TemplateManagementService::getSelectedTemplate();
+
+                if (empty($template)) {
+                    abort(404);
+                }
+
+                foreach ($template->pages as $page) {
+
+                    Route::get($page->slug, fn() => Inertia::render("Templates/{$template->name}/Pages/{$page->name}"))
+                        ->name('site.' . TemplateManagementService::convertToKebabCase($page->name));
+
+                    //->name("template.{$template->name}.{$page->name}");
+                }
+            });
+
     }
 }

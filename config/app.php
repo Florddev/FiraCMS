@@ -5,6 +5,9 @@ use Illuminate\Support\ServiceProvider;
 
 return [
 
+    'selected_template' => 'default',
+    'default_template' => 'default',
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

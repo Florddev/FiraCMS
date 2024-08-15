@@ -4,6 +4,7 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
+use App\Services\TemplateManagementService;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -41,14 +42,14 @@ Route::get('/install', [InstallController::class, 'index'])->name('install.index
 Route::get('/install/initial-data', [InstallController::class, 'getInitialData']);
 Route::post('/install', [InstallController::class, 'install']);
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+//Route::get('/', function () {
+//    return Inertia::render('Welcome', [
+//        'canLogin' => Route::has('login'),
+//        'canRegister' => Route::has('register'),
+//        'laravelVersion' => Application::VERSION,
+//        'phpVersion' => PHP_VERSION,
+//    ]);
+//});
 
 Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
 Route::post('/plugins/{plugin}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle');
@@ -81,5 +82,6 @@ Route::middleware('auth')->group(function () {
 Route::get('test', function () {
     return Inertia::render('Test');
 });
+
 
 require __DIR__.'/auth.php';
