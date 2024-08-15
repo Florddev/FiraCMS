@@ -44,6 +44,9 @@ createInertiaApp({
         if (parts.length > 1) {
             return resolvePageComponent(`../../plugins/${parts[0]}/resources/js/Pages/${parts[1]}.jsx`, import.meta.glob('../../plugins/*/resources/js/Pages/**/*.jsx'));
         }
+        if(name.startsWith('Templates')){
+            return resolvePageComponent(`./${name}.jsx`, import.meta.glob('./Templates/**/*.jsx'))
+        }
         return resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx'))
     },
     setup({ el, App, props }) {
