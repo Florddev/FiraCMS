@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Head } from '@inertiajs/react';
-import Navbar from '../Sections/Navbar';
+import HeroSection from '../Sections/HeroSection.jsx';
 import Footer from '../Sections/Footer';
 import Contact from '../Sections/Contact';
 
@@ -11,7 +11,7 @@ export default function PageContact() {
         <>
             <Head title="Contact" />
 
-            <Navbar />
+            <HeroSection />
             <p>Page contact</p>
             <Contact />
             <Footer />

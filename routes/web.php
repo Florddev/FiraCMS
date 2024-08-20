@@ -1,18 +1,14 @@
 <?php
 
-use App\Http\Controllers\MediaController;
-use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\PluginController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\InstallController;
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RoleController;
-use App\Services\TemplateManagementService;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\LanguageController;
-use App\Http\Controllers\InstallController;
-use App\Http\Controllers\PluginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,37 +47,27 @@ Route::post('/install', [InstallController::class, 'install']);
 //    ]);
 //});
 
-Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
-Route::post('/plugins/{plugin}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle');
-Route::get('/plugins/scan', [PluginController::class, 'scan'])->name('plugins.scan');
-
-Route::get('/home', function () {
-    return Inertia::render('Home');
-})->middleware(['auth', 'verified'])->name('home');
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::post('/change-locale', [LanguageController::class, 'changeLocale'])->name('change.locale');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-    Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
+
+Route::post('/change-locale', [LanguageController::class, 'changeLocale'])->name('change.locale');
+
+Route::prefix('nexius-admin')->middleware('auth')->group(function () {
 
     Route::resource('users', UserController::class);
+    Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
+//    Route::delete('/users/destroy-multiple', [UserController::class, 'destroyMultiple'])->name('users.destroyMultiple');
+
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
 
-    Route::delete('/users/destroy-multiple', [UserController::class, 'destroyMultiple'])->name('users.destroyMultiple');
+    Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
+    Route::post('/plugins/{plugin}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle');
+    Route::get('/plugins/scan', [PluginController::class, 'scan'])->name('plugins.scan');
 });
-
-Route::get('test', function () {
-    return Inertia::render('Test');
-});
-
 
 require __DIR__.'/auth.php';

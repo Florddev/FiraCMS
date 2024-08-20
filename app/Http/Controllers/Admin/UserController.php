@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\DataTableTrait;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
@@ -12,38 +13,27 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
 
-    public function list(Request $request)
-    {
-        $query = User::query();
-
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('email', 'like', '%' . $request->search . '%');
-        }
-
-        if ($request->filled('orderBy')) {
-            $query->orderBy($request->orderBy, $request->direction ?? 'asc');
-        }
-
-        if ($request->filled('max')) {
-            $query->take($request->input('max'));
-        }
-
-        $perPage = $request->input('per_page') ?? 10;
-        $users = $query->paginate($perPage);
-
-        return Inertia::render('Admin/User/UserList', [
-            'data' => $users,
-            'defaultPerPage' => $perPage
-        ]);
-    }
-
-
+    use DataTableTrait;
 
     public function index()
     {
-        $users = User::with('roles', 'permissions')->get();
-        return Inertia::render('Admin/User/Index', ['users' => $users]);
+        return Inertia::render('Admin/User/Index');
+    }
+
+//    public function index()
+//    {
+//        $users = User::with('roles', 'permissions')->get();
+//        return Inertia::render('Admin/User/Index', ['users' => $users]);
+//    }
+
+    public function getUsers(Request $request)
+    {
+        return $this->getDataTableData($request, User::class, [
+            'searchableFields' => ['name', 'email'],
+            'with' => ['roles', 'permissions'],
+            'columns' => ['id', 'name', 'email', 'email_verified_at', 'created_at'],
+            'defaultPerPage' => 10,
+        ]);
     }
 
     /**
@@ -117,5 +107,37 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', 'Les utilisateurs sélectionnés ont été supprimés.');
     }
+
+
+
+
+
+    public function list(Request $request)
+    {
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('email', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('orderBy')) {
+            $query->orderBy($request->orderBy, $request->direction ?? 'asc');
+        }
+
+        if ($request->filled('max')) {
+            $query->take($request->input('max'));
+        }
+
+        $perPage = $request->input('per_page') ?? 10;
+        $users = $query->paginate($perPage);
+
+        return Inertia::render('Admin/User/UserList', [
+            'data' => $users,
+            'defaultPerPage' => $perPage
+        ]);
+    }
+
+
 
 }

@@ -37,6 +37,7 @@ const UserList = ({ defaultPerPage }) => {
                 <Button onClick={() => setLocale('fr')}>Switch to French</Button>
                 <Button onClick={() => setLocale('en')}>Switch to English</Button>
             </div>
+
             {/*<h1>{t('messages.welcome')}</h1>*/}
             {/*<LanguageSelector*/}
             {/*    currentLocale={locale}*/}

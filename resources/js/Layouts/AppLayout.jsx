@@ -27,41 +27,44 @@ import {
 import {PluginHook} from "@/hooks.jsx";
 import MediaManager from "@/Components/App/MediaManager.jsx";
 import ApplicationLogo from "@/Components/ApplicationLogo.jsx";
+import LanguageSelector from "@/Components/App/LanguageSelector.jsx";
+import {useLaravelReactI18n} from "laravel-react-i18n";
 
 function AppLayout({ current_page, children }) {
     const [avatarPath, setAvatarPath] = useState('');
+    const { t, tChoice } = useLaravelReactI18n();
 
     const auth = usePage().props.auth;
 
     const navLinksClass = (active = false) => {
-        return `flex items-center gap-3 rounded-lg px-3 py-2 ` + (active ? `bg-muted transition-all text-primary` : `text-muted-foreground transition-all`) + ` hover:text-primary`;
+        return `flex items-center gap-3 rounded-lg px-3 py-2 ` + (active ? `bg-primary/5 transition-all text-primary` : `text-muted-foreground transition-all hover:bg-muted`) + ` /*hover:text-primary*/`;
     }
 
     const navigation = (
         <>
-            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+            <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-0.5">
                 <Link href="#" className={navLinksClass(current_page === 'home')}>
                     <Home className="h-4 w-4" />
-                    Accueil
+                    {t('messages.home')}
                 </Link>
                 <Link href="#" className={navLinksClass(current_page === 'users')}>
                     <Users className="h-4 w-4" />
-                    Utilisateurs
+                    {tChoice('messages.user', 2)}
                 </Link>
                 <Link href="#" className={navLinksClass(current_page === 'medias')}>
                     <Image className="h-4 w-4" />
-                    Médias
+                    {tChoice('messages.media', 2)}
                 </Link>
                 <Link href="#" className={navLinksClass(current_page === 'apparence')}>
                     <Flower className="h-4 w-4" />
-                    Apparence
+                    {t('messages.appearance')}
                 </Link>
                 <Link href="#" className={navLinksClass(current_page === 'plugins')}>
                     <Blocks className="h-4 w-4" />
-                    Extentions
-                    <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                        6
-                    </Badge>
+                    {tChoice('messages.plugin', 2)}
+                    {/*<Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">*/}
+                    {/*    6*/}
+                    {/*</Badge>*/}
                 </Link>
             </nav>
             <PluginHook name="dashboard-navigation" />
@@ -139,29 +142,33 @@ function AppLayout({ current_page, children }) {
                                     type="search"
                                     placeholder="Search products..."
                                     className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
+                                    size=""
                                 />
                             </div>
                         </form>
                     </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="secondary">
-                                {auth?.user?.name}
-                                <CircleUser size="icon" className="rounded-full h-5 w-5 ml-2" />
-                                <span className="sr-only">Toggle user menu</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                <Link href={route('profile.edit')} method="get" as="button">Profil</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Link href={route('logout')} method="post" as="button">Logout</Link>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex items-center gap-2">
+                        <LanguageSelector/>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="secondary" size="sm">
+                                    {auth?.user?.name}
+                                    <CircleUser size="icon" className="rounded-full h-5 w-5 ml-2" />
+                                    <span className="sr-only">Toggle user menu</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                    <Link href={route('profile.edit')} method="get" as="button">Profil</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Link href={route('logout')} method="post" as="button">Logout</Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </header>
                 <main className="p-4 lg:p-6">
 

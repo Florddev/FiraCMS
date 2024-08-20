@@ -134,6 +134,7 @@ const LaravelDataTable = forwardRef(({
                     ),
                     enableSorting: false,
                     enableHiding: false,
+                    cellClassName: "flex"
                 },
                 ...columns
             ];
@@ -188,9 +189,9 @@ const LaravelDataTable = forwardRef(({
                                             {header.isPlaceholder ? null : (
                                                 <div
                                                     {...{
-                                                        className: header.column.getCanSort()
+                                                        className: (header.column.getCanSort()
                                                             ? 'cursor-pointer select-none flex items-center'
-                                                            : '',
+                                                            : '') + header.column.columnDef.headerClassName,
                                                         onClick: header.column.getToggleSortingHandler(),
                                                     }}
                                                 >
@@ -219,7 +220,7 @@ const LaravelDataTable = forwardRef(({
                                         data-state={selectedRowIds.has(row.original.id) && "selected"}
                                     >
                                         {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
+                                            <TableCell key={cell.id} className={cell.column.columnDef.cellClassName}>
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </TableCell>
                                         ))}

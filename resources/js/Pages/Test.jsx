@@ -1,5 +1,5 @@
 import React from 'react';
-import UserTable from '@/Datatables/UserTable';
+import UserTable from '@/Pages/Admin/User/UserTable.jsx';
 import AppLayout from "@/Layouts/AppLayout";
 import {Button} from "@/Components/ui/button";
 import {ArrowUpRight} from "lucide-react";

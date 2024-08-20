@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Head } from '@inertiajs/react';
-import Navbar from '../Sections/Navbar';
+import HeroSection from '../Sections/HeroSection.jsx';
 import Footer from '../Sections/Footer';
 
 export default function PageAbout() {
@@ -10,7 +10,7 @@ export default function PageAbout() {
         <>
             <Head title="About" />
 
-            <Navbar />
+            <HeroSection />
             <p>About page</p>
             <Footer />
         </>
