@@ -47,3 +47,4 @@ Route::delete('/medias/{id}', [MediaController::class, 'destroy']);
 Route::get('/media/{fileName}', [MediaController::class, 'media'])->name('media');
 
 Route::get('/datatable/users', [UserController::class, 'getUsers']);
+Route::get('/datatable/users/test', [UserController::class, 'getUsersTest']);

@@ -24,7 +24,7 @@ trait DataTableTrait
         // Appliquer la recherche globale
         if ($request->has('search')) {
             $searchTerm = $request->input('search');
-            $searchableFields = $options['searchableFields'] ?? ['name', 'email']; // Ajustez selon vos besoins
+            $searchableFields = $options['searchableFields'] ?? ['name', 'email'];
             $query->where(function ($q) use ($searchableFields, $searchTerm) {
                 foreach ($searchableFields as $field) {
                     $q->orWhere($field, 'LIKE', "%{$searchTerm}%");
@@ -94,6 +94,8 @@ trait DataTableTrait
             'currentPage' => $data->currentPage(),
             'perPage' => $data->perPage(),
             'selectedIds' => $selectedIds,
+            'items' => $data->items(),
+            'hasMore' => $data->hasMorePages(),
         ]);
     }
 }
