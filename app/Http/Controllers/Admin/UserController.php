@@ -45,10 +45,7 @@ class UserController extends Controller
             ->orWhere('email', 'like', "%{$search}%")
             ->paginate($perPage)
             ->through(function ($item) {
-                return [
-                    'value' => $item->id,
-                    'label' => $item->name
-                ];
+                return $item;
             });
 
         return response()->json($items);
