@@ -36,6 +36,21 @@ class UserController extends Controller
         ]);
     }
 
+    public function getUsersTest(Request $request)
+    {
+        $search = $request->input('search', '');
+        $perPage = 20; // Nombre d'éléments par page
+
+        $items = User::where('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%")
+            ->paginate($perPage)
+            ->through(function ($item) {
+                return $item;
+            });
+
+        return response()->json($items);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
