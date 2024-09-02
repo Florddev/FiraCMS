@@ -23,7 +23,7 @@ const UsersIndex = () => {
                             <FetchingCombobox
                                 apiUrl="/api/datatable/users/test"
                                 placeholder="Sélectionner des utilisateurs"
-                                idField="name"
+                                idField="id"
                                 onSelect={(users) => console.log('Utilisateurs sélectionnés:', users)}
                                 multiple={true}
                                 renderItem={(user, isSelected) => (

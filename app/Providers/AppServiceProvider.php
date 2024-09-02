@@ -24,16 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(PluginService $pluginService)
     {
-        $pluginService->scanPlugins();
-//        $enabledPlugins = Plugin::where('enabled', true)->get();
-//
-//        foreach ($enabledPlugins as $plugin) {
-//            $providerClass = "Plugins\\{$plugin->directory}\\PluginServiceProvider";
-//            if (class_exists($providerClass)) {
-//                $this->app->register($providerClass);
-//            } else {
-//                Log::warning("Provider non trouvé : $providerClass");
-//            }
-//        }
+        if(Schema::hasTable('plugins')) $pluginService->scanPlugins();
     }
 }
