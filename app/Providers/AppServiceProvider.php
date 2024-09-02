@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Plugin;
+use App\Services\InstallationStateManager;
 use App\Services\PluginService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -22,8 +23,12 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(PluginService $pluginService)
-    {
-        if(Schema::hasTable('plugins')) $pluginService->scanPlugins();
+    public function boot(
+        PluginService $pluginService,
+        InstallationStateManager $installationStateManager
+    ) {
+        if ($installationStateManager->isInstalled()) {
+            if (Schema::hasTable('plugins')) $pluginService->scanPlugins();
+        }
     }
 }

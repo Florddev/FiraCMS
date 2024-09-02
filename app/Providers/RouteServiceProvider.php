@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Plugin;
+use App\Services\InstallationStateManager;
 use App\Services\TemplateManagementService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +16,7 @@ use Inertia\Inertia;
 
 class RouteServiceProvider extends ServiceProvider
 {
+
     /**
      * The path to your application's "home" route.
      *
@@ -40,8 +43,10 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
 
-            if(Schema::hasTable('templates')) $this->loadTemplatesRoutes();
-            if(Schema::hasTable('plugins')) $this->loadPluginRoutes();
+            if ((new InstallationStateManager())->isInstalled()) {
+                if (Schema::hasTable('templates')) $this->loadTemplatesRoutes();
+                if (Schema::hasTable('plugins')) $this->loadPluginRoutes();
+            }
         });
     }
 
@@ -65,7 +70,7 @@ class RouteServiceProvider extends ServiceProvider
     {
 
         Route::middleware(['web', 'inertia'])
-            ->group(function() {
+            ->group(function () {
                 $template = TemplateManagementService::getSelectedTemplate();
 
                 if (empty($template)) {
@@ -80,6 +85,5 @@ class RouteServiceProvider extends ServiceProvider
                     //->name("template.{$template->name}.{$page->name}");
                 }
             });
-
     }
 }
