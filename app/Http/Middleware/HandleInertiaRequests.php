@@ -4,7 +4,9 @@ namespace App\Http\Middleware;
 
 use App\Helpers\LocaleHelper;
 use App\Models\Plugin;
+use App\Services\InstallationStateManager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -32,19 +34,24 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $loadedPlugins = null;
+        if ((new InstallationStateManager())->isInstalled()) {
+            if (Schema::hasTable('plugins')) $loadedPlugins = Plugin::where('enabled', true)->get();
+        }
+
         return [
             ...parent::share($request),
             'csrf' => csrf_token(),
             'auth' => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn () => [
+            'ziggy' => fn() => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
             'locale' => LocaleHelper::getUserLocale(),
             'availableLocales' => config('app.available_locales'),
-            'loadedPlugins' => Plugin::where('enabled', true)->get()
+            'loadedPlugins' => $loadedPlugins
         ];
     }
 }
