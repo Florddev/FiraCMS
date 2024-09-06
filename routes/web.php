@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
 Route::post('/change-locale', [LanguageController::class, 'changeLocale'])->name('change.locale');
 
 Route::prefix('nexius-admin')->middleware('auth')->group(function () {
+    Route::get('home', function () { echo "Page Home"; })->name("home");
 
     Route::resource('users', UserController::class);
     Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
@@ -68,6 +69,6 @@ Route::prefix('nexius-admin')->middleware('auth')->group(function () {
     Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
     Route::post('/plugins/{plugin}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle');
     Route::get('/plugins/scan', [PluginController::class, 'scan'])->name('plugins.scan');
-});
+})->name("nexius-admin");
 
 require __DIR__.'/auth.php';
