@@ -30,16 +30,16 @@ class Handler extends ExceptionHandler
         });
     }
 
-    public function render($request, Throwable $e)
-    {
-        if ($e instanceof ModelNotFoundException) {
-            return response()->json(['error' => 'Resource not found'], 404);
-        }
-
-        if ($e instanceof NotFoundHttpException) {
-            return response()->json(['error' => 'Route not found'], 404);
-        }
-
-        return parent::render($request, $e);
-    }
+//    public function render($request, Throwable $e)
+//    {
+//        if ($e instanceof ModelNotFoundException) {
+//            return response()->json(['error' => 'Resource not found'], 404);
+//        }
+//
+//        if ($e instanceof NotFoundHttpException) {
+//            return response()->json(['error' => 'Route not found'], 404);
+//        }
+//
+//        return parent::render($request, $e);
+//    }
 }

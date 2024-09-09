@@ -20,32 +20,11 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
-//Route::group(['prefix' => 'install', 'as' => 'install.', 'middleware' => 'web'], function () {
-//    Route::get('/', [InstallController::class, 'index'])->name('index');
-//    Route::get('/start', [InstallController::class, 'start'])->name('start');
-//    Route::get('/requirements', [InstallController::class, 'requirements'])->name('requirements');
-//    Route::get('/permissions', [InstallController::class, 'permissions'])->name('permissions');
-//    Route::get('/database', [InstallController::class, 'database'])->name('database');
-//    Route::post('/database', [InstallController::class, 'setDatabase'])->name('setDatabase');
-//    Route::get('/migrations', [InstallController::class, 'migrations'])->name('migrations');
-//    Route::post('/migrations', [InstallController::class, 'runMigrations'])->name('runMigrations');
-//    Route::get('/admin', [InstallController::class, 'admin'])->name('admin');
-//    Route::post('/admin', [InstallController::class, 'createAdmin'])->name('createAdmin');
-//    Route::get('/finish', [InstallController::class, 'finish'])->name('finish');
-//});
 
 Route::get('/install', [InstallController::class, 'index'])->name('install.index');
 Route::get('/install/initial-data', [InstallController::class, 'getInitialData']);
 Route::post('/install', [InstallController::class, 'install']);
 
-//Route::get('/', function () {
-//    return Inertia::render('Welcome', [
-//        'canLogin' => Route::has('login'),
-//        'canRegister' => Route::has('register'),
-//        'laravelVersion' => Application::VERSION,
-//        'phpVersion' => PHP_VERSION,
-//    ]);
-//});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -24,7 +24,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/nexius-admin/home';
+    public const HOME = '/home';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -43,10 +43,13 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
 
-            if ((new InstallationStateManager())->isInstalled()) {
-                if (Schema::hasTable('templates')) $this->loadTemplatesRoutes();
-                if (Schema::hasTable('plugins')) $this->loadPluginRoutes();
-            }
+
+            try {
+                if ((new InstallationStateManager())->isInstalled()) {
+                    if (Schema::hasTable('templates')) $this->loadTemplatesRoutes();
+                    if (Schema::hasTable('plugins')) $this->loadPluginRoutes();
+                }
+            } catch (\Exception){}
         });
     }
 
