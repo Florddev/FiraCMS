@@ -167,6 +167,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Florddev\LaravelAutoRouting\AutoRoutingServiceProvider::class,
 
         /*
          * Application Service Providers...

@@ -27,8 +27,10 @@ class AppServiceProvider extends ServiceProvider
         PluginService $pluginService,
         InstallationStateManager $installationStateManager
     ) {
-        if ($installationStateManager->isInstalled()) {
-            if (Schema::hasTable('plugins')) $pluginService->scanPlugins();
-        }
+        try {
+            if ($installationStateManager->isInstalled()) {
+                if (Schema::hasTable('plugins')) $pluginService->scanPlugins();
+            }
+        } catch (\Exception){}
     }
 }

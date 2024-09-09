@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "921be5f24438621ebd91009fb7b16f74",
+    "content-hash": "7fa1611172c07a24a587f6f77fa60e45",
     "packages": [
         {
             "name": "brick/math",
@@ -505,6 +505,54 @@
                 }
             ],
             "time": "2023-10-06T06:47:41+00:00"
+        },
+        {
+            "name": "florddev/laravel-auto-routing",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Florddev/laravel-auto-routing.git",
+                "reference": "76bcbbe7d7ecdd2675cfaf377220f2b3a4f8eac5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Florddev/laravel-auto-routing/zipball/76bcbbe7d7ecdd2675cfaf377220f2b3a4f8eac5",
+                "reference": "76bcbbe7d7ecdd2675cfaf377220f2b3a4f8eac5",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^8.0|^9.0|^10.0",
+                "php": "^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Florddev\\LaravelAutoRouting\\AutoRoutingServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Florddev\\LaravelAutoRouting\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florddev",
+                    "email": "florddev@protonmail.com"
+                }
+            ],
+            "description": "Un package de routage automatique pour Laravel",
+            "support": {
+                "issues": "https://github.com/Florddev/laravel-auto-routing/issues",
+                "source": "https://github.com/Florddev/laravel-auto-routing/tree/v1.1.0"
+            },
+            "time": "2024-09-09T18:53:19+00:00"
         },
         {
             "name": "fruitcake/php-cors",
