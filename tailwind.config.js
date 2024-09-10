@@ -63,6 +63,7 @@ export default {
             },
             fontFamily: {
                 sans: ["Figtree", ...defaultTheme.fontFamily.sans],
+                inter: ['Inter var', "sans-serif"],
             },
             keyframes: {
                 "accordion-down": {

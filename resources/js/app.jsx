@@ -6,8 +6,9 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { LaravelReactI18nProvider } from 'laravel-react-i18n';
 import {useEffect, useState} from 'react';
 import {PluginHook, setHooksLoaded} from './hooks';
+import '@fontsource/inter';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Nexius';
 
 function PluginLoader({ children, loadedPlugins }) {
     const [hooksAreLoaded, setHooksAreLoaded] = useState(false);
