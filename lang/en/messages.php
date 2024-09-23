@@ -14,8 +14,12 @@ return [
     'created_at' => 'Created at',
     'status' => 'Status',
     'role' => 'Role|Roles',
+    'permission' => 'Permission|Permissions',
     'action' => 'Action|Actions',
 
     'user_management' => 'User management',
     'add_user' => 'Add user',
+    'create_user' => 'Create user',
+
+    'cancel' => 'Cancel'
 ];

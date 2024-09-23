@@ -36,18 +36,19 @@ Route::middleware('auth')->group(function () {
 Route::post('/change-locale', [LanguageController::class, 'changeLocale'])->name('change.locale');
 
 Route::prefix('nexius-admin')->middleware('auth')->group(function () {
+
     Route::get('home', function () { echo "Page Home"; })->name("home");
 
-    Route::resource('users', UserController::class);
-    Route::get('/users/list', [UserController::class, 'list'])->name('users.list');
-//    Route::delete('/users/destroy-multiple', [UserController::class, 'destroyMultiple'])->name('users.destroyMultiple');
+    Route::auto('/users', UserController::class);
 
-    Route::resource('roles', RoleController::class);
-    Route::resource('permissions', PermissionController::class);
-
-    Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
-    Route::post('/plugins/{plugin}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle');
-    Route::get('/plugins/scan', [PluginController::class, 'scan'])->name('plugins.scan');
+//    Route::resource('roles', RoleController::class);
+//    Route::resource('permissions', PermissionController::class);
+//
+//    Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
+//    Route::post('/plugins/{plugin}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle');
+//    Route::get('/plugins/scan', [PluginController::class, 'scan'])->name('plugins.scan');
 })->name("nexius-admin");
+
+// dd(Route::getRoutes());
 
 require __DIR__.'/auth.php';

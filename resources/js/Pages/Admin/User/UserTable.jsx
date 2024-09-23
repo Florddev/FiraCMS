@@ -20,81 +20,9 @@ import {
     DropdownMenuTrigger
 } from "@/Components/ui/dropdown-menu";
 import {CheckIcon, DotsHorizontalIcon} from "@radix-ui/react-icons";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-    CommandSeparator
-} from "@/Components/ui/command";
-import {cn} from "@/lib/utils";
-import {Checkbox} from "@/Components/ui/checkbox";
-import RoleManagement from "@/Pages/Admin/User/Components/RoleManagement";
-import PermissionManagement from "@/Pages/Admin/User/Components/PermissionManagement.jsx";
-import UserRoleManagement from "@/Pages/Admin/User/Components/RoleManagement";
-import UserPermissionManagement from "@/Pages/Admin/User/Components/PermissionManagement.jsx";
 
 const UserTable = () => {
     const { t, tChoice, currentLocale } = useLaravelReactI18n();
-
-    const roles = [
-        {
-            'id': 1,
-            'name': 'Administrateur',
-        },
-        {
-            'id': 2,
-            'name': 'Développeur',
-        },
-        {
-            'id': 3,
-            'name': 'Modérateur',
-        },
-        {
-            'id': 4,
-            'name': 'Utilisateur',
-        }
-    ];
-
-    const permissions = [
-        {
-            'id': 1,
-            'name': 'core.perm.1',
-        },
-        {
-            'id': 2,
-            'name': 'core.perm.2',
-        },
-        {
-            'id': 3,
-            'name': 'core.perm.3',
-        },
-        {
-            'id': 4,
-            'name': 'core.perm.4',
-        }
-    ];
-
-
-    const handleUpdateUser = async (updatedUser) => {
-        // Implement the logic to update the user on the server
-        console.log('Updating user:', updatedUser);
-        // After successful update, you might want to refresh the page data
-    };
-
-    const handleUpdateRoles = async (updatedRole) => {
-        // Implement the logic to update the role on the server
-        console.log('Updating role:', updatedRole);
-        // After successful update, you might want to refresh the roles data
-    };
-
-    const handleUpdateUserPermissions = async (permissionId) => {
-        // Implement the logic to update the user's permissions on the server
-        console.log('Updating user permissions:', permissionId);
-        // After successful update, you might want to refresh the user data
-    };
 
     const columns = [
         {
@@ -126,16 +54,22 @@ const UserTable = () => {
                 },
             },
             cell: ({row})=>
-                row.original.roles.length === 0 ? (
-                    <Badge variant="secondary">Visiteur</Badge>
-                ) : row.original.roles.map(role => (
-                    <Badge variant="outline">{role.name}</Badge>
+                row.original.roles.length !== 0 && row.original.roles.map(role => (
+                    <Badge key={role.id} variant="outline">{role.name}</Badge>
                 ))
         },
         {
             accessorKey: "email_verified_at",
             header: t('messages.status'),
             enableSorting: true,
+            meta: {
+                filter: {
+                    options: [
+                        { label: "Verified", value: "verified" },
+                        { label: "Unverified", value: "unverified" },
+                    ],
+                },
+            },
             cell: ({row}) => (
                 row.original.email_verified_at && (
                     <Badge variant="default" className="bg-green-200/40 text-green-500 font-normal">Vérifié</Badge>
@@ -178,27 +112,13 @@ const UserTable = () => {
                         <DropdownMenuSub>
                             <DropdownMenuSubTrigger>Roles</DropdownMenuSubTrigger>
                             <DropdownMenuSubContent>
-
-                                <UserRoleManagement
-                                    user={row.original}
-                                    roles={roles}
-                                    permissions={permissions}
-                                    onUpdateUser={handleUpdateUser}
-                                    onUpdateRoles={handleUpdateRoles}
-                                />
-
+                                Content
                             </DropdownMenuSubContent>
                         </DropdownMenuSub>
                         <DropdownMenuSub>
                             <DropdownMenuSubTrigger>Permissions</DropdownMenuSubTrigger>
                             <DropdownMenuSubContent>
-
-                                <UserPermissionManagement
-                                    allPermissions={permissions}
-                                    selectedPermissions={row.original.permissions.map(p => p.id)}
-                                    onPermissionToggle={handleUpdateUserPermissions}
-                                />
-
+                                Content
                             </DropdownMenuSubContent>
                         </DropdownMenuSub>
                         <DropdownMenuSeparator />
@@ -219,7 +139,7 @@ const UserTable = () => {
 
     const fetchData = useCallback(async ({ pagination, sorting, columnFilters, globalFilter, selectedIds }) => {
         try {
-            const response = await axios.get('/api/datatable/users', {
+            const response = await axios.get(route('users.get_users'), {
                 params: {
                     page: pagination.pageIndex + 1,
                     per_page: pagination.pageSize,

@@ -1,10 +1,6 @@
 import { useEffect } from 'react';
-import Checkbox from '@/Components/Checkbox';
-import GuestLayout from '@/Layouts/GuestLayout';
+import { Checkbox } from '@/Components/ui/checkbox';
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Loader2 } from "lucide-react";
 

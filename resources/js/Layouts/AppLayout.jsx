@@ -37,12 +37,12 @@ function AppLayout({ current_page, children }) {
     const auth = usePage().props.auth;
 
     const navLinksClass = (active = false) => {
-        return `flex items-center gap-3 rounded-lg px-3 py-2 ` + (active ? `bg-primary/5 transition-all text-primary` : `text-muted-foreground transition-all hover:bg-muted`) + ` /*hover:text-primary*/`;
+        return `flex items-center text-li gap-3 rounded-lg px-3 py-1.5 ` + (active ? `font-medium bg-primary/5 transition-all text-primary` : `font-normal text-muted-foreground transition-all hover:bg-muted`) + ` /*hover:text-primary*/`;
     }
 
     const navigation = (
         <>
-            <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-0.5">
+            <nav className="grid items-start px-2 text-sm font-medium gap-0.5">
                 <Link href="#" className={navLinksClass(current_page === 'home')}>
                     <Home className="h-4 w-4" />
                     {t('messages.home')}
@@ -75,7 +75,7 @@ function AppLayout({ current_page, children }) {
         <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-muted/40 md:block sticky top-0 max-h-screen">
                 <div className="flex h-full max-h-screen flex-col gap-2">
-                    <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+                    <div className="flex h-14 items-center border-b px-4">
                         <Link href="/" className="flex items-center gap-3 font-semibold">
                             <ApplicationLogo className="h-6 w-6 fill-primary" />
                             <span className="">Nexius</span>
@@ -106,7 +106,7 @@ function AppLayout({ current_page, children }) {
                 </div>
             </div>
             <div className="flex flex-col">
-                <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0">
+                <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 sticky top-0">
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button variant="outline" size="icon" className="shrink-0 md:hidden">
@@ -163,14 +163,14 @@ function AppLayout({ current_page, children }) {
                                 <DropdownMenuItem>
                                     <Link href={route('profile.edit')} method="get" as="button">Profil</Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem asChild>
                                     <Link href={route('logout')} method="post" as="button">Logout</Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
                 </header>
-                <main className="p-4 lg:p-6">
+                <main>
 
                     {/*<h2>Sélectionnez un avatar</h2>*/}
                     {/*<img src={avatarPath} alt="Avatar" />*/}

@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\DataTableTrait;
+use Florddev\LaravelAutoRouting\Attributes\HttpDelete;
+use Florddev\LaravelAutoRouting\Attributes\HttpGet;
+use Florddev\LaravelAutoRouting\Attributes\HttpPatch;
+use Florddev\LaravelAutoRouting\Attributes\HttpPost;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
@@ -15,6 +19,7 @@ class UserController extends Controller
 
     use DataTableTrait;
 
+    #[HttpGet]
     public function index()
     {
         return Inertia::render('Admin/User/Index');
@@ -26,6 +31,7 @@ class UserController extends Controller
 //        return Inertia::render('Admin/User/Index', ['users' => $users]);
 //    }
 
+    #[HttpGet]
     public function getUsers(Request $request)
     {
         return $this->getDataTableData($request, User::class, [
@@ -36,6 +42,7 @@ class UserController extends Controller
         ]);
     }
 
+    #[HttpGet]
     public function getUsersTest(Request $request)
     {
         $search = $request->input('search', '');
@@ -54,6 +61,7 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
+    #[HttpGet]
     public function create()
     {
         //
@@ -62,6 +70,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    #[HttpPost]
     public function store(Request $request)
     {
         //
@@ -70,6 +79,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
+    #[HttpGet]
     public function show(string $id)
     {
         //
@@ -78,7 +88,7 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-
+    #[HttpGet]
     public function edit(User $user)
     {
         $roles = Role::all();
@@ -93,7 +103,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-
+    #[HttpPatch]
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
@@ -110,6 +120,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    #[HttpDelete]
     public function destroy(string $id)
     {
         //
@@ -124,9 +135,7 @@ class UserController extends Controller
     }
 
 
-
-
-
+    #[HttpGet]
     public function list(Request $request)
     {
         $query = User::query();

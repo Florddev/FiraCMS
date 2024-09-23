@@ -45,9 +45,9 @@
         "lucide-react": "^0.408.0",
         "path": "^0.12.7",
         "react-i18next": "^15.0.0",
-        "react-virtual": "^2.10.4",
         "tailwind-merge": "^2.4.0",
         "tailwindcss-animate": "^1.0.7",
-        "typescript": "^5.5.3"
+        "typescript": "^5.5.3",
+        "vaul": "^0.9.4"
     }
 }
