@@ -3,7 +3,7 @@ import React from 'react';
 import { Head } from '@inertiajs/react';
 import HeroSection from '../Sections/HeroSection.jsx';
 import Footer from '../Sections/Footer';
-import Contact from '../Sections/Contact';
+import Contact from '../Sections/CallToActions';
 
 export default function PageContact() {
 

@@ -44,9 +44,9 @@ Route::prefix('nexius-admin')->middleware('auth')->group(function () {
 //    Route::resource('roles', RoleController::class);
 //    Route::resource('permissions', PermissionController::class);
 //
-//    Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
-//    Route::post('/plugins/{plugin}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle');
-//    Route::get('/plugins/scan', [PluginController::class, 'scan'])->name('plugins.scan');
+    Route::get('/plugins', [PluginController::class, 'index'])->name('plugins.index');
+    Route::post('/plugins/{plugin}/toggle', [PluginController::class, 'toggle'])->name('plugins.toggle');
+    Route::get('/plugins/scan', [PluginController::class, 'scan'])->name('plugins.scan');
 })->name("nexius-admin");
 
 // dd(Route::getRoutes());

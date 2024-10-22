@@ -15,6 +15,7 @@ import {
 import { Input } from "@/Components/ui/input"
 import { PasswordInput } from "@/Components/ui/input-password"
 import { Label } from "@/Components/ui/label"
+import {useLaravelReactI18n} from "laravel-react-i18n";
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -22,6 +23,8 @@ export default function Login({ status, canResetPassword }) {
         password: '',
         remember: false,
     });
+
+    const { t, tChoice } = useLaravelReactI18n();
 
     useEffect(() => {
         return () => {
@@ -151,7 +154,7 @@ export default function Login({ status, canResetPassword }) {
                                     <Checkbox
                                         name="remember"
                                         checked={data.remember}
-                                        onChange={(e) => setData('remember', e.target.checked)}
+                                        onCheckedChange={(checked) => setData('remember', checked)}
                                     />
                                     <span className="ms-2 text-sm text-gray-600 dark:text-gray-400">Remember me</span>
                                 </label>
@@ -161,7 +164,7 @@ export default function Login({ status, canResetPassword }) {
                                 {processing && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 )}
-                                Login
+                                { t('messages.login') }
                             </Button>
                         </div>
                         <div className="mt-4 text-center text-sm">

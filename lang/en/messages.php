@@ -21,5 +21,6 @@ return [
     'add_user' => 'Add user',
     'create_user' => 'Create user',
 
-    'cancel' => 'Cancel'
+    'cancel' => 'Cancel',
+    'next' => 'Next'
 ];

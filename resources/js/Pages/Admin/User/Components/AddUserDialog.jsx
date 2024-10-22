@@ -28,6 +28,8 @@ import {ArrowUpRight} from "lucide-react";
 import {useLaravelReactI18n} from "laravel-react-i18n";
 import { Checkbox } from '@/Components/ui/checkbox';
 import {Switch} from "@/Components/ui/switch";
+import {useForm} from "@inertiajs/react";
+import {useEffect} from "react";
 
 
 export function AddUserDialog() {
@@ -82,33 +84,69 @@ export function AddUserDialog() {
 function ProfileForm({ className }) {
     const { t, tChoice } = useLaravelReactI18n();
 
+    const { data, setData, post, processing, errors, reset } = useForm({
+        firstname: '',
+        lastname: '',
+        email: '',
+        password: '',
+        remember: false,
+    });
+
+    useEffect(() => {
+        return () => {
+            reset('password');
+        };
+    }, []);
+
+    const submit = (e) => {
+        e.preventDefault();
+
+        post(route('login'));
+    };
+
     return (
-        <form className={cn("grid items-start gap-4", className)}>
+        <form onSubmit={submit} className={cn("grid items-start gap-4", className)}>
             <div className="py-4 grid items-start gap-4">
                 <div className="columns-2">
                     <div className="grid gap-2">
                         <Label htmlFor="firstname">Firstname</Label>
-                        <Input type="text" id="firstname" placeholder="John" />
+                        <Input type="text"
+                               id="firstname"
+                               value={data.firstname}
+                               onChange={(e) => setData('firstname', e.target.value)}
+                               placeholder="John" />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="lastname">Lastname</Label>
-                        <Input type="text" id="lastname" placeholder="Snow" />
+                        <Input type="text"
+                               id="lastname"
+                               value={data.lastname}
+                               onChange={(e) => setData('lastname', e.target.value)}
+                               placeholder="Snow" />
                     </div>
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input type="email" id="email" placeholder="john.snow@example.com" />
+                    <Input type="email"
+                           id="email"
+                           value={data.email}
+                           onChange={(e) => setData('email', e.target.value)}
+                           placeholder="john.snow@example.com"
+                    />
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="password">Password</Label>
-                    <PasswordInput id="password"/>
+                    <PasswordInput id="password"
+                                   value={data.password}
+                                   onChange={(e) => setData('password', e.target.value)}
+                    />
                 </div>
                 <div className="block">
                     <label className="flex items-center">
                         <Checkbox
                             name="remember"
-                            // checked={data.remember}
-                            // onChange={(e) => setData('remember', e.target.checked)}
+                            checked={data.remember}
+                            onCheckedChange={(checked) => setData('remember', checked)}
                         />
                         <span className="ms-2 text-sm text-gray-600 dark:text-gray-400">
                             User must change password at next login
