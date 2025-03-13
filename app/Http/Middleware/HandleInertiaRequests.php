@@ -51,7 +51,13 @@ class HandleInertiaRequests extends Middleware
             ],
             'locale' => LocaleHelper::getUserLocale(),
             'availableLocales' => config('app.available_locales'),
-            'loadedPlugins' => $loadedPlugins
+            'loadedPlugins' => $loadedPlugins,
+            'app' => [
+                'name' => env('APP_NAME', 'AppName'),
+                'admin' => [
+                    'prefix' => env('APP_ADMIN_PREFIX', 'admin'),
+                ]
+            ]
         ];
     }
 }
